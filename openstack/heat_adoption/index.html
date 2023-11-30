@@ -1,0 +1,1284 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OpenStack Data Plane Adoption">
+      
+      
+        <meta name="author" content="OpenStack Team">
+      
+      
+        <link rel="canonical" href="https://openstack-k8s-operators.github.io/data-plane-adoption/openstack/heat_adoption/">
+      
+      
+        <link rel="prev" href="../ironic_adoption/">
+      
+      
+        <link rel="next" href="../troubleshooting/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.14">
+    
+    
+      
+        <title>Heat adoption - OpenStack Data Plane Adoption</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.fad675c6.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#heat-adoption" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenStack Data Plane Adoption" class="md-header__button md-logo" aria-label="OpenStack Data Plane Adoption" data-md-component="logo">
+      
+  <img src="../../images/openstack-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenStack Data Plane Adoption
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Heat adoption
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/openstack-k8s-operators/data-plane-adoption" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openstack-k8s-operators/data-plane-adoption
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenStack Data Plane Adoption" class="md-nav__button md-logo" aria-label="OpenStack Data Plane Adoption" data-md-component="logo">
+      
+  <img src="../../images/openstack-logo.png" alt="logo">
+
+    </a>
+    OpenStack Data Plane Adoption
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/openstack-k8s-operators/data-plane-adoption" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openstack-k8s-operators/data-plane-adoption
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    OpenStack
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            OpenStack
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Planning the new deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backend_services_deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Backend services deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pull_openstack_configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pull Openstack configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stop_openstack_services/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stop OpenStack services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mariadb_copy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MariaDB data copy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ovn_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OVN data migration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keystone_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Keystone adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../neutron_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Neutron adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ceph_backend_configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ceph backend configuration (if applicable)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glance_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glance adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../placement_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Placement adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cinder_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cinder adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../horizon_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Horizon adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../edpm_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EDPM adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ironic_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ironic adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Heat adoption
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Heat adoption
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procedure-heat-adoption" class="md-nav__link">
+    <span class="md-ellipsis">
+      Procedure - Heat adoption
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Post-checks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Post-checks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check-that-heat-service-is-registered-in-keystone" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check that Heat service is registered in Keystone
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-heat-engine-services-are-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check Heat engine services are up
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-you-can-now-see-your-heat-stacks-again" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verify you can now see your Heat stacks again
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Ceph
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Ceph
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ceph/ceph_rbd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ceph RBD migration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ceph/ceph_rgw/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ceph RGW migration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing to documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/development_environment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procedure-heat-adoption" class="md-nav__link">
+    <span class="md-ellipsis">
+      Procedure - Heat adoption
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Post-checks
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Post-checks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check-that-heat-service-is-registered-in-keystone" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check that Heat service is registered in Keystone
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-heat-engine-services-are-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check Heat engine services are up
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-you-can-now-see-your-heat-stacks-again" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verify you can now see your Heat stacks again
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="heat-adoption">Heat adoption<a class="headerlink" href="#heat-adoption" title="Permanent link">#</a></h1>
+<p>Adopting Heat means that an existing <code>OpenStackControlPlane</code> CR, where Heat
+is supposed to be disabled, should be patched to start the service with the
+configuration parameters provided by the source environment.</p>
+<p>After the adoption process has been completed, a user can expect that they
+will then have CR's for <code>Heat</code>, <code>HeatAPI</code>, <code>HeatEngine</code> and <code>HeatCFNAPI</code>.
+Additionally, a user should have endpoints created within Keystone to facilitate
+the above mentioned servies.</p>
+<p>This guide also assumes that:</p>
+<ol>
+<li>A <code>TripleO</code> environment (the source Cloud) is running on one side;</li>
+<li>A OpenShift environment is running on the other side.</li>
+</ol>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">#</a></h2>
+<ul>
+<li>Previous Adoption steps completed. Notably, MariaDB and Keystone
+  should be already adopted.</li>
+<li>In addition, if your existing Heat stacks contain resources from other services
+  such as Neutron, Nova, Swift, etc. Those services should be adopted first before
+  trying to adopt Heat.</li>
+</ul>
+<h2 id="procedure-heat-adoption">Procedure - Heat adoption<a class="headerlink" href="#procedure-heat-adoption" title="Permanent link">#</a></h2>
+<p>As already done for <a href="https://github.com/openstack-k8s-operators/data-plane-adoption/blob/main/keystone_adoption.md">Keystone</a>, the Heat Adoption follows a similar pattern.</p>
+<p>Patch the <code>osp-secret</code> to update the <code>HeatAuthEncryptionKey</code> and <code>HeatPassword</code>. This needs
+to match what you have configured in the existing TripleO Heat configuration.</p>
+<p>You can retrieve and verify the existing <code>auth_encryption_key</code> and <code>service</code> passwords via:
+<div class="highlight"><pre><span></span><code><span class="o">[</span>stack@rhosp17<span class="w"> </span>~<span class="o">]</span>$<span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s1">&#39;HeatPassword|HeatAuth&#39;</span><span class="w"> </span>~/overcloud-deploy/overcloud/overcloud-passwords.yaml
+<span class="w">  </span>HeatAuthEncryptionKey:<span class="w"> </span>Q60Hj8PqbrDNu2dDCbyIQE2dibpQUPg2
+<span class="w">  </span>HeatPassword:<span class="w"> </span>dU2N0Vr2bdelYH7eQonAwPfI3
+</code></pre></div></p>
+<p>And verifying on one of the Controllers that this is indeed the value in use:
+<div class="highlight"><pre><span></span><code><span class="o">[</span>stack@rhosp17<span class="w"> </span>~<span class="o">]</span>$<span class="w"> </span>ansible<span class="w"> </span>-i<span class="w"> </span>overcloud-deploy/overcloud/config-download/overcloud/tripleo-ansible-inventory.yaml<span class="w"> </span>overcloud-controller-0<span class="w"> </span>-m<span class="w"> </span>shell<span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;grep auth_encryption_key /var/lib/config-data/puppet-generated/heat/etc/heat/heat.conf | grep -Ev &#39;^#|^</span>$<span class="s2">&#39;&quot;</span><span class="w"> </span>-b
+overcloud-controller-0<span class="w"> </span><span class="p">|</span><span class="w"> </span>CHANGED<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">rc</span><span class="o">=</span><span class="m">0</span><span class="w"> </span>&gt;&gt;
+<span class="nv">auth_encryption_key</span><span class="o">=</span>Q60Hj8PqbrDNu2dDCbyIQE2dibpQUPg2
+</code></pre></div></p>
+<p>This password needs to be base64 encoded and added to the <code>osp-secret</code>
+<div class="highlight"><pre><span></span><code>❯<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>Q60Hj8PqbrDNu2dDCbyIQE2dibpQUPg2<span class="w"> </span><span class="p">|</span><span class="w"> </span>base64
+UTYwSGo4UHFickROdTJkRENieUlRRTJkaWJwUVVQZzIK
+
+❯<span class="w"> </span>oc<span class="w"> </span>patch<span class="w"> </span>secret<span class="w"> </span>osp-secret<span class="w"> </span>--type<span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="w"> </span>-p<span class="o">=</span><span class="s1">&#39;[{&quot;op&quot; : &quot;replace&quot; ,&quot;path&quot; : &quot;/data/HeatAuthEncryptionKey&quot; ,&quot;value&quot; : &quot;UTYwSGo4UHFickROdTJkRENieUlRRTJkaWJwUVVQZzIK&quot;}]&#39;</span>
+secret/osp-secret<span class="w"> </span>patched
+</code></pre></div></p>
+<p>Patch OpenStackControlPlane to deploy Heat:</p>
+<div class="highlight"><pre><span></span><code>oc<span class="w"> </span>patch<span class="w"> </span>openstackcontrolplane<span class="w"> </span>openstack<span class="w"> </span>--type<span class="o">=</span>merge<span class="w"> </span>--patch<span class="w"> </span><span class="s1">&#39;</span>
+<span class="s1">spec:</span>
+<span class="s1">  heat:</span>
+<span class="s1">    enabled: true</span>
+<span class="s1">    apiOverride:</span>
+<span class="s1">      route: {}</span>
+<span class="s1">    template:</span>
+<span class="s1">      databaseInstance: openstack</span>
+<span class="s1">      secret: osp-secret</span>
+<span class="s1">      memcachedInstance: memcached</span>
+<span class="s1">      passwordSelectors:</span>
+<span class="s1">        authEncryptionKey: HeatAuthEncryptionKey</span>
+<span class="s1">        database: HeatDatabasePassword</span>
+<span class="s1">        service: HeatPassword</span>
+<span class="s1">&#39;</span>
+</code></pre></div>
+<h2 id="post-checks">Post-checks<a class="headerlink" href="#post-checks" title="Permanent link">#</a></h2>
+<p>Ensure all of the CR's reach the "Setup Complete" state:
+<div class="highlight"><pre><span></span><code>❯<span class="w"> </span>oc<span class="w"> </span>get<span class="w"> </span>Heat,HeatAPI,HeatEngine,HeatCFNAPI
+NAME<span class="w">                           </span>STATUS<span class="w">   </span>MESSAGE
+heat.heat.openstack.org/heat<span class="w">   </span>True<span class="w">     </span>Setup<span class="w"> </span><span class="nb">complete</span>
+
+NAME<span class="w">                                  </span>STATUS<span class="w">   </span>MESSAGE
+heatapi.heat.openstack.org/heat-api<span class="w">   </span>True<span class="w">     </span>Setup<span class="w"> </span><span class="nb">complete</span>
+
+NAME<span class="w">                                        </span>STATUS<span class="w">   </span>MESSAGE
+heatengine.heat.openstack.org/heat-engine<span class="w">   </span>True<span class="w">     </span>Setup<span class="w"> </span><span class="nb">complete</span>
+
+NAME<span class="w">                                        </span>STATUS<span class="w">   </span>MESSAGE
+heatcfnapi.heat.openstack.org/heat-cfnapi<span class="w">   </span>True<span class="w">     </span>Setup<span class="w"> </span><span class="nb">complete</span>
+</code></pre></div></p>
+<h3 id="check-that-heat-service-is-registered-in-keystone">Check that Heat service is registered in Keystone<a class="headerlink" href="#check-that-heat-service-is-registered-in-keystone" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code><span class="w"> </span>oc<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>openstackclient<span class="w"> </span>--<span class="w"> </span>openstack<span class="w"> </span>service<span class="w"> </span>list<span class="w"> </span>-c<span class="w"> </span>Name<span class="w"> </span>-c<span class="w"> </span>Type
++------------+----------------+
+<span class="p">|</span><span class="w"> </span>Name<span class="w">       </span><span class="p">|</span><span class="w"> </span>Type<span class="w">           </span><span class="p">|</span>
++------------+----------------+
+<span class="p">|</span><span class="w"> </span>heat<span class="w">       </span><span class="p">|</span><span class="w"> </span>orchestration<span class="w">  </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>glance<span class="w">     </span><span class="p">|</span><span class="w"> </span>image<span class="w">          </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>heat-cfn<span class="w">   </span><span class="p">|</span><span class="w"> </span>cloudformation<span class="w"> </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>ceilometer<span class="w"> </span><span class="p">|</span><span class="w"> </span>Ceilometer<span class="w">     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>keystone<span class="w">   </span><span class="p">|</span><span class="w"> </span>identity<span class="w">       </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>placement<span class="w">  </span><span class="p">|</span><span class="w"> </span>placement<span class="w">      </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>cinderv3<span class="w">   </span><span class="p">|</span><span class="w"> </span>volumev3<span class="w">       </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>nova<span class="w">       </span><span class="p">|</span><span class="w"> </span>compute<span class="w">        </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>neutron<span class="w">    </span><span class="p">|</span><span class="w"> </span>network<span class="w">        </span><span class="p">|</span>
++------------+----------------+
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>❯<span class="w"> </span>oc<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>openstackclient<span class="w"> </span>--<span class="w"> </span>openstack<span class="w"> </span>endpoint<span class="w"> </span>list<span class="w"> </span>--service<span class="o">=</span>heat<span class="w"> </span>-f<span class="w"> </span>yaml
+-<span class="w"> </span>Enabled:<span class="w"> </span><span class="nb">true</span>
+<span class="w">  </span>ID:<span class="w"> </span>1da7df5b25b94d1cae85e3ad736b25a5
+<span class="w">  </span>Interface:<span class="w"> </span>public
+<span class="w">  </span>Region:<span class="w"> </span>regionOne
+<span class="w">  </span>Service<span class="w"> </span>Name:<span class="w"> </span>heat
+<span class="w">  </span>Service<span class="w"> </span>Type:<span class="w"> </span>orchestration
+<span class="w">  </span>URL:<span class="w"> </span>http://heat-api-public-openstack-operators.apps.okd.bne-shift.net/v1/%<span class="o">(</span>tenant_id<span class="o">)</span>s
+-<span class="w"> </span>Enabled:<span class="w"> </span><span class="nb">true</span>
+<span class="w">  </span>ID:<span class="w"> </span>414dd03d8e9d462988113ea0e3a330b0
+<span class="w">  </span>Interface:<span class="w"> </span>internal
+<span class="w">  </span>Region:<span class="w"> </span>regionOne
+<span class="w">  </span>Service<span class="w"> </span>Name:<span class="w"> </span>heat
+<span class="w">  </span>Service<span class="w"> </span>Type:<span class="w"> </span>orchestration
+<span class="w">  </span>URL:<span class="w"> </span>http://heat-api-internal.openstack-operators.svc:8004/v1/%<span class="o">(</span>tenant_id<span class="o">)</span>s
+</code></pre></div>
+<h3 id="check-heat-engine-services-are-up">Check Heat engine services are up<a class="headerlink" href="#check-heat-engine-services-are-up" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code><span class="w"> </span>oc<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>openstackclient<span class="w"> </span>--<span class="w"> </span>openstack<span class="w"> </span>orchestration<span class="w"> </span>service<span class="w"> </span>list<span class="w"> </span>-f<span class="w"> </span>yaml
+-<span class="w"> </span>Binary:<span class="w"> </span>heat-engine
+<span class="w">  </span>Engine<span class="w"> </span>ID:<span class="w"> </span>b16ad899-815a-4b0c-9f2e-e6d9c74aa200
+<span class="w">  </span>Host:<span class="w"> </span>heat-engine-6d47856868-p7pzz
+<span class="w">  </span>Hostname:<span class="w"> </span>heat-engine-6d47856868-p7pzz
+<span class="w">  </span>Status:<span class="w"> </span>up
+<span class="w">  </span>Topic:<span class="w"> </span>engine
+<span class="w">  </span>Updated<span class="w"> </span>At:<span class="w"> </span><span class="s1">&#39;2023-10-11T21:48:01.000000&#39;</span>
+-<span class="w"> </span>Binary:<span class="w"> </span>heat-engine
+<span class="w">  </span>Engine<span class="w"> </span>ID:<span class="w"> </span>887ed392-0799-4310-b95c-ac2d3e6f965f
+<span class="w">  </span>Host:<span class="w"> </span>heat-engine-6d47856868-p7pzz
+<span class="w">  </span>Hostname:<span class="w"> </span>heat-engine-6d47856868-p7pzz
+<span class="w">  </span>Status:<span class="w"> </span>up
+<span class="w">  </span>Topic:<span class="w"> </span>engine
+<span class="w">  </span>Updated<span class="w"> </span>At:<span class="w"> </span><span class="s1">&#39;2023-10-11T21:48:00.000000&#39;</span>
+-<span class="w"> </span>Binary:<span class="w"> </span>heat-engine
+<span class="w">  </span>Engine<span class="w"> </span>ID:<span class="w"> </span>26ed9668-b3f2-48aa-92e8-2862252485ea
+<span class="w">  </span>Host:<span class="w"> </span>heat-engine-6d47856868-p7pzz
+<span class="w">  </span>Hostname:<span class="w"> </span>heat-engine-6d47856868-p7pzz
+<span class="w">  </span>Status:<span class="w"> </span>up
+<span class="w">  </span>Topic:<span class="w"> </span>engine
+<span class="w">  </span>Updated<span class="w"> </span>At:<span class="w"> </span><span class="s1">&#39;2023-10-11T21:48:00.000000&#39;</span>
+-<span class="w"> </span>Binary:<span class="w"> </span>heat-engine
+<span class="w">  </span>Engine<span class="w"> </span>ID:<span class="w"> </span>1011943b-9fea-4f53-b543-d841297245fd
+<span class="w">  </span>Host:<span class="w"> </span>heat-engine-6d47856868-p7pzz
+<span class="w">  </span>Hostname:<span class="w"> </span>heat-engine-6d47856868-p7pzz
+<span class="w">  </span>Status:<span class="w"> </span>up
+<span class="w">  </span>Topic:<span class="w"> </span>engine
+<span class="w">  </span>Updated<span class="w"> </span>At:<span class="w"> </span><span class="s1">&#39;2023-10-11T21:48:01.000000&#39;</span>
+</code></pre></div>
+<h3 id="verify-you-can-now-see-your-heat-stacks-again">Verify you can now see your Heat stacks again<a class="headerlink" href="#verify-you-can-now-see-your-heat-stacks-again" title="Permanent link">#</a></h3>
+<p>We can now test that user can create networks, subnets, ports, routers etc.</p>
+<div class="highlight"><pre><span></span><code>❯<span class="w"> </span>openstack<span class="w"> </span>stack<span class="w"> </span>list<span class="w"> </span>-f<span class="w"> </span>yaml
+-<span class="w"> </span>Creation<span class="w"> </span>Time:<span class="w"> </span><span class="s1">&#39;2023-10-11T22:03:20Z&#39;</span>
+<span class="w">  </span>ID:<span class="w"> </span>20f95925-7443-49cb-9561-a1ab736749ba
+<span class="w">  </span>Project:<span class="w"> </span>4eacd0d1cab04427bc315805c28e66c9
+<span class="w">  </span>Stack<span class="w"> </span>Name:<span class="w"> </span>test-networks
+<span class="w">  </span>Stack<span class="w"> </span>Status:<span class="w"> </span>CREATE_COMPLETE
+<span class="w">  </span>Updated<span class="w"> </span>Time:<span class="w"> </span>null
+</code></pre></div>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      Last update:
+      2023-10-12
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["search.suggest", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.cd18aaf1.min.js"></script>
+      
+    
+  </body>
+</html>

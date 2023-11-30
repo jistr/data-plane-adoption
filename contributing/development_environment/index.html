@@ -1,0 +1,1864 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OpenStack Data Plane Adoption">
+      
+      
+        <meta name="author" content="OpenStack Team">
+      
+      
+        <link rel="canonical" href="https://openstack-k8s-operators.github.io/data-plane-adoption/contributing/development_environment/">
+      
+      
+        <link rel="prev" href="../documentation/">
+      
+      
+        <link rel="next" href="../tests/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.14">
+    
+    
+      
+        <title>Development environment - OpenStack Data Plane Adoption</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.fad675c6.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#development-environment" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenStack Data Plane Adoption" class="md-header__button md-logo" aria-label="OpenStack Data Plane Adoption" data-md-component="logo">
+      
+  <img src="../../images/openstack-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenStack Data Plane Adoption
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Development environment
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/openstack-k8s-operators/data-plane-adoption" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openstack-k8s-operators/data-plane-adoption
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenStack Data Plane Adoption" class="md-nav__button md-logo" aria-label="OpenStack Data Plane Adoption" data-md-component="logo">
+      
+  <img src="../../images/openstack-logo.png" alt="logo">
+
+    </a>
+    OpenStack Data Plane Adoption
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/openstack-k8s-operators/data-plane-adoption" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openstack-k8s-operators/data-plane-adoption
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    OpenStack
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            OpenStack
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/planning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Planning the new deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/backend_services_deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Backend services deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/pull_openstack_configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pull Openstack configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/stop_openstack_services/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stop OpenStack services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/mariadb_copy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MariaDB data copy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/ovn_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OVN data migration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/keystone_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Keystone adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/neutron_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Neutron adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/ceph_backend_configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ceph backend configuration (if applicable)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/glance_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glance adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/placement_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Placement adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/cinder_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cinder adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/horizon_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Horizon adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/edpm_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EDPM adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/ironic_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ironic adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/heat_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Heat adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Ceph
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Ceph
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ceph/ceph_rbd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ceph RBD migration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ceph/ceph_rgw/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ceph RGW migration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing to documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Development environment
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Development environment
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#environment-prep" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment prep
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-of-crc-with-network-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment of CRC with network isolation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment of CRC with network isolation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-environment-with-openstack-ironic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development environment with Openstack ironic
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-the-openstack-k8s-operators-openstack-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install the openstack-k8s-operators (openstack-operator)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Install the openstack-k8s-operators (openstack-operator)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#convenience-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Convenience steps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#route-networks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Route networks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#snapshotrevert" class="md-nav__link">
+    <span class="md-ellipsis">
+      Snapshot/revert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-workload-to-adopt" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a workload to adopt
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Create a workload to adopt">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ironic-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ironic Steps
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enroll-baremetal-nodes-make-bmaas_generate_nodes_yaml-tail-n-2-tee-tmpironic_nodesyaml-scp-i-homeinstall_yamlsoutedpmansibleee-ssh-key-id_rsa-tmpironic_nodesyaml-root192168122100-ssh-i-homeinstall_yamlsoutedpmansibleee-ssh-key-id_rsa-root192168122100-export-os_cloudstandalone-openstack-baremetal-create-rootironic_nodesyaml-export-ironic_python_agent_ramdisk_idopenstack-image-show-deploy-ramdisk-c-id-f-value-export-ironic_python_agent_kernel_idopenstack-image-show-deploy-kernel-c-id-f-value-for-node-in-openstack-baremetal-node-list-c-uuid-f-value-do-openstack-baremetal-node-set-node-driver-info-deploy_ramdiskironic_python_agent_ramdisk_id-driver-info-deploy_kernelironic_python_agent_kernel_id-resource-class-baremetal-property-capabilitiesboot_modeuefi-done-create-a-baremetal-flavor-openstack-flavor-create-baremetal-ram-1024-vcpus-1-disk-15-property-resourcesvcpu0-property-resourcesmemory_mb0-property-resourcesdisk_gb0-property-resourcescustom_baremetal1-property-capabilitiesboot_modeuefi-create-image-imgfedora-cloud-base-38-16x86_64qcow2-urlhttpsdownloadfedoraprojectorgpubfedoralinuxreleases38cloudx86_64imagesimg-curl-o-tmpimg-l-url-disk_formatqemu-img-info-tmpimg-grep-file-format-awk-print-nf-openstack-image-create-container-format-bare-disk-format-disk_format-fedora-cloud-base-38-tmpimg-export-baremetal_nodesopenstack-baremetal-node-list-c-uuid-f-value-manage-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-node-manage-node-done-wait-for-nodes-to-reach-manageable-state-watch-openstack-baremetal-node-list-inspect-baremetal-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-introspection-start-node-done-wait-for-inspection-to-complete-watch-openstack-baremetal-introspection-list-provide-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-node-provide-node-done-wait-for-nodes-to-reach-available-state-watch-openstack-baremetal-node-list-create-an-instance-on-baremetal-openstack-server-show-baremetal-test-openstack-server-create-baremetal-test-flavor-baremetal-image-fedora-cloud-base-38-nic-net-idprovisioning-wait-check-instance-status-and-network-connectivity-openstack-server-show-baremetal-test-ping-c-4-openstack-server-show-baremetal-test-f-json-c-addresses-jq-r-addressesprovisioning0" class="md-nav__link">
+    <span class="md-ellipsis">
+      # Enroll baremetal nodes
+make bmaas_generate_nodes_yaml | tail -n +2 | tee /tmp/ironic_nodes.yaml
+scp -i $HOME/install_yamls/out/edpm/ansibleee-ssh-key-id_rsa /tmp/ironic_nodes.yaml root@192.168.122.100:
+ssh -i $HOME/install_yamls/out/edpm/ansibleee-ssh-key-id_rsa root@192.168.122.100
+
+export OS_CLOUD=standalone
+openstack baremetal create /root/ironic_nodes.yaml
+export IRONIC_PYTHON_AGENT_RAMDISK_ID=$(openstack image show deploy-ramdisk -c id -f value)
+export IRONIC_PYTHON_AGENT_KERNEL_ID=$(openstack image show deploy-kernel -c id -f value)
+for node in $(openstack baremetal node list -c UUID -f value); do
+  openstack baremetal node set $node \
+    --driver-info deploy_ramdisk=${IRONIC_PYTHON_AGENT_RAMDISK_ID} \
+    --driver-info deploy_kernel=${IRONIC_PYTHON_AGENT_KERNEL_ID} \
+    --resource-class baremetal \
+    --property capabilities=&#39;boot_mode:uefi&#39;
+done
+
+# Create a baremetal flavor
+openstack flavor create baremetal --ram 1024 --vcpus 1 --disk 15 \
+  --property resources:VCPU=0 \
+  --property resources:MEMORY_MB=0 \
+  --property resources:DISK_GB=0 \
+  --property resources:CUSTOM_BAREMETAL=1 \
+  --property capabilities:boot_mode=&quot;uefi&quot;
+
+# Create image
+IMG=Fedora-Cloud-Base-38-1.6.x86_64.qcow2
+URL=https://download.fedoraproject.org/pub/fedora/linux/releases/38/Cloud/x86_64/images/$IMG
+curl -o /tmp/${IMG} -L $URL
+DISK_FORMAT=$(qemu-img info /tmp/${IMG} | grep &quot;file format:&quot; | awk &#39;{print $NF}&#39;)
+openstack image create --container-format bare --disk-format ${DISK_FORMAT} Fedora-Cloud-Base-38 &lt; /tmp/${IMG}
+
+export BAREMETAL_NODES=$(openstack baremetal node list -c UUID -f value)
+# Manage nodes
+for node in $BAREMETAL_NODES; do
+  openstack baremetal node manage $node
+done
+
+# Wait for nodes to reach &quot;manageable&quot; state
+watch openstack baremetal node list
+
+# Inspect baremetal nodes
+for node in $BAREMETAL_NODES; do
+  openstack baremetal introspection start $node
+done
+
+# Wait for inspection to complete
+watch openstack baremetal introspection list
+
+# Provide nodes
+for node in $BAREMETAL_NODES; do
+  openstack baremetal node provide $node
+done
+
+# Wait for nodes to reach &quot;available&quot; state
+watch openstack baremetal node list
+
+# Create an instance on baremetal
+openstack server show baremetal-test || {
+    openstack server create baremetal-test --flavor baremetal --image Fedora-Cloud-Base-38 --nic net-id=provisioning --wait
+}
+
+# Check instance status and network connectivity
+openstack server show baremetal-test
+ping -c 4 $(openstack server show baremetal-test -f json -c addresses | jq -r .addresses.provisioning[0])
+
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performing-the-data-plane-adoption" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performing the Data Plane Adoption
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reset-the-environment-to-pre-adoption-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reset the environment to pre-adoption state
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experimenting-with-an-additional-compute-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      Experimenting with an additional compute node
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Experimenting with an additional compute node">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deploy-ng-control-plane-with-ceph" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploy NG Control Plane with Ceph
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warning-about-two-openstacks-and-one-ceph" class="md-nav__link">
+    <span class="md-ellipsis">
+      Warning about two OpenStacks and one Ceph
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-edpm-compute-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploy edpm-compute-1
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#begin-adoption-testing-or-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Begin Adoption Testing or Development
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#environment-prep" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment prep
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-of-crc-with-network-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment of CRC with network isolation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment of CRC with network isolation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-environment-with-openstack-ironic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development environment with Openstack ironic
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-the-openstack-k8s-operators-openstack-operator" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install the openstack-k8s-operators (openstack-operator)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Install the openstack-k8s-operators (openstack-operator)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#convenience-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Convenience steps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#route-networks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Route networks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#snapshotrevert" class="md-nav__link">
+    <span class="md-ellipsis">
+      Snapshot/revert
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-workload-to-adopt" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create a workload to adopt
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Create a workload to adopt">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ironic-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ironic Steps
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enroll-baremetal-nodes-make-bmaas_generate_nodes_yaml-tail-n-2-tee-tmpironic_nodesyaml-scp-i-homeinstall_yamlsoutedpmansibleee-ssh-key-id_rsa-tmpironic_nodesyaml-root192168122100-ssh-i-homeinstall_yamlsoutedpmansibleee-ssh-key-id_rsa-root192168122100-export-os_cloudstandalone-openstack-baremetal-create-rootironic_nodesyaml-export-ironic_python_agent_ramdisk_idopenstack-image-show-deploy-ramdisk-c-id-f-value-export-ironic_python_agent_kernel_idopenstack-image-show-deploy-kernel-c-id-f-value-for-node-in-openstack-baremetal-node-list-c-uuid-f-value-do-openstack-baremetal-node-set-node-driver-info-deploy_ramdiskironic_python_agent_ramdisk_id-driver-info-deploy_kernelironic_python_agent_kernel_id-resource-class-baremetal-property-capabilitiesboot_modeuefi-done-create-a-baremetal-flavor-openstack-flavor-create-baremetal-ram-1024-vcpus-1-disk-15-property-resourcesvcpu0-property-resourcesmemory_mb0-property-resourcesdisk_gb0-property-resourcescustom_baremetal1-property-capabilitiesboot_modeuefi-create-image-imgfedora-cloud-base-38-16x86_64qcow2-urlhttpsdownloadfedoraprojectorgpubfedoralinuxreleases38cloudx86_64imagesimg-curl-o-tmpimg-l-url-disk_formatqemu-img-info-tmpimg-grep-file-format-awk-print-nf-openstack-image-create-container-format-bare-disk-format-disk_format-fedora-cloud-base-38-tmpimg-export-baremetal_nodesopenstack-baremetal-node-list-c-uuid-f-value-manage-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-node-manage-node-done-wait-for-nodes-to-reach-manageable-state-watch-openstack-baremetal-node-list-inspect-baremetal-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-introspection-start-node-done-wait-for-inspection-to-complete-watch-openstack-baremetal-introspection-list-provide-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-node-provide-node-done-wait-for-nodes-to-reach-available-state-watch-openstack-baremetal-node-list-create-an-instance-on-baremetal-openstack-server-show-baremetal-test-openstack-server-create-baremetal-test-flavor-baremetal-image-fedora-cloud-base-38-nic-net-idprovisioning-wait-check-instance-status-and-network-connectivity-openstack-server-show-baremetal-test-ping-c-4-openstack-server-show-baremetal-test-f-json-c-addresses-jq-r-addressesprovisioning0" class="md-nav__link">
+    <span class="md-ellipsis">
+      # Enroll baremetal nodes
+make bmaas_generate_nodes_yaml | tail -n +2 | tee /tmp/ironic_nodes.yaml
+scp -i $HOME/install_yamls/out/edpm/ansibleee-ssh-key-id_rsa /tmp/ironic_nodes.yaml root@192.168.122.100:
+ssh -i $HOME/install_yamls/out/edpm/ansibleee-ssh-key-id_rsa root@192.168.122.100
+
+export OS_CLOUD=standalone
+openstack baremetal create /root/ironic_nodes.yaml
+export IRONIC_PYTHON_AGENT_RAMDISK_ID=$(openstack image show deploy-ramdisk -c id -f value)
+export IRONIC_PYTHON_AGENT_KERNEL_ID=$(openstack image show deploy-kernel -c id -f value)
+for node in $(openstack baremetal node list -c UUID -f value); do
+  openstack baremetal node set $node \
+    --driver-info deploy_ramdisk=${IRONIC_PYTHON_AGENT_RAMDISK_ID} \
+    --driver-info deploy_kernel=${IRONIC_PYTHON_AGENT_KERNEL_ID} \
+    --resource-class baremetal \
+    --property capabilities=&#39;boot_mode:uefi&#39;
+done
+
+# Create a baremetal flavor
+openstack flavor create baremetal --ram 1024 --vcpus 1 --disk 15 \
+  --property resources:VCPU=0 \
+  --property resources:MEMORY_MB=0 \
+  --property resources:DISK_GB=0 \
+  --property resources:CUSTOM_BAREMETAL=1 \
+  --property capabilities:boot_mode=&quot;uefi&quot;
+
+# Create image
+IMG=Fedora-Cloud-Base-38-1.6.x86_64.qcow2
+URL=https://download.fedoraproject.org/pub/fedora/linux/releases/38/Cloud/x86_64/images/$IMG
+curl -o /tmp/${IMG} -L $URL
+DISK_FORMAT=$(qemu-img info /tmp/${IMG} | grep &quot;file format:&quot; | awk &#39;{print $NF}&#39;)
+openstack image create --container-format bare --disk-format ${DISK_FORMAT} Fedora-Cloud-Base-38 &lt; /tmp/${IMG}
+
+export BAREMETAL_NODES=$(openstack baremetal node list -c UUID -f value)
+# Manage nodes
+for node in $BAREMETAL_NODES; do
+  openstack baremetal node manage $node
+done
+
+# Wait for nodes to reach &quot;manageable&quot; state
+watch openstack baremetal node list
+
+# Inspect baremetal nodes
+for node in $BAREMETAL_NODES; do
+  openstack baremetal introspection start $node
+done
+
+# Wait for inspection to complete
+watch openstack baremetal introspection list
+
+# Provide nodes
+for node in $BAREMETAL_NODES; do
+  openstack baremetal node provide $node
+done
+
+# Wait for nodes to reach &quot;available&quot; state
+watch openstack baremetal node list
+
+# Create an instance on baremetal
+openstack server show baremetal-test || {
+    openstack server create baremetal-test --flavor baremetal --image Fedora-Cloud-Base-38 --nic net-id=provisioning --wait
+}
+
+# Check instance status and network connectivity
+openstack server show baremetal-test
+ping -c 4 $(openstack server show baremetal-test -f json -c addresses | jq -r .addresses.provisioning[0])
+
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performing-the-data-plane-adoption" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performing the Data Plane Adoption
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reset-the-environment-to-pre-adoption-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reset the environment to pre-adoption state
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experimenting-with-an-additional-compute-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      Experimenting with an additional compute node
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Experimenting with an additional compute node">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deploy-ng-control-plane-with-ceph" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploy NG Control Plane with Ceph
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warning-about-two-openstacks-and-one-ceph" class="md-nav__link">
+    <span class="md-ellipsis">
+      Warning about two OpenStacks and one Ceph
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-edpm-compute-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploy edpm-compute-1
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#begin-adoption-testing-or-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Begin Adoption Testing or Development
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="development-environment">Development environment<a class="headerlink" href="#development-environment" title="Permanent link">#</a></h1>
+<hr />
+<p><em>This is a guide for an install_yamls based Adoption environment with
+network isolation as an alternative to the
+<a href="https://gitlab.cee.redhat.com/rhos-upgrades/data-plane-adoption-dev/-/tree/main/crc-and-vagrant">CRC and Vagrant TripleO Standalone</a>
+development environment guide.</em></p>
+<hr />
+<p>The Adoption development environment utilizes
+<a href="https://github.com/openstack-k8s-operators/install_yamls">install_yamls</a>
+for CRC VM creation and for creation of the VM that hosts the original
+Wallaby OpenStack in Standalone configuration.</p>
+<h2 id="environment-prep">Environment prep<a class="headerlink" href="#environment-prep" title="Permanent link">#</a></h2>
+<p>Get install_yamls:</p>
+<div class="highlight"><pre><span></span><code>git clone https://github.com/openstack-k8s-operators/install_yamls.git
+</code></pre></div>
+<p>Install tools for operator development:</p>
+<div class="highlight"><pre><span></span><code>cd ~/install_yamls/devsetup
+make download_tools
+</code></pre></div>
+<h2 id="deployment-of-crc-with-network-isolation">Deployment of CRC with network isolation<a class="headerlink" href="#deployment-of-crc-with-network-isolation" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>cd ~/install_yamls/devsetup
+PULL_SECRET=$HOME/pull-secret.txt CPUS=12 MEMORY=40000 DISK=100 make crc
+
+eval $(crc oc-env)
+oc login -u kubeadmin -p 12345678 https://api.crc.testing:6443
+
+make crc_attach_default_interface
+</code></pre></div>
+<hr />
+<h3 id="development-environment-with-openstack-ironic">Development environment with Openstack ironic<a class="headerlink" href="#development-environment-with-openstack-ironic" title="Permanent link">#</a></h3>
+<p>Create the BMaaS network (<code>crc-bmaas</code>) and virtual baremetal nodes controlled by
+a RedFish BMC emulator.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>..<span class="w">  </span><span class="c1"># back to install_yamls</span>
+make<span class="w"> </span>nmstate
+make<span class="w"> </span>namespace
+<span class="nb">cd</span><span class="w"> </span>devsetup<span class="w">  </span><span class="c1"># back to install_yamls/devsetup</span>
+make<span class="w"> </span>bmaas
+</code></pre></div>
+<p>A node definition YAML file to use with the <code>openstack baremetal create
+&lt;file&gt;.yaml</code> command can be generated for the virtual baremetal nodes by
+running the <code>bmaas_generate_nodes_yaml</code> make target. Store it in a temp
+file for later.</p>
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>bmaas_generate_nodes_yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-n<span class="w"> </span>+2<span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>/tmp/ironic_nodes.yaml
+</code></pre></div>
+<p>Set variables to deploy edpm Standalone with additional network
+(<code>baremetal</code>) and compute driver <code>ironic</code>.</p>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; /tmp/addtional_nets.json</span>
+<span class="s">[</span>
+<span class="s">  {</span>
+<span class="s">    &quot;type&quot;: &quot;network&quot;,</span>
+<span class="s">    &quot;name&quot;: &quot;crc-bmaas&quot;,</span>
+<span class="s">    &quot;standalone_config&quot;: {</span>
+<span class="s">      &quot;type&quot;: &quot;ovs_bridge&quot;,</span>
+<span class="s">      &quot;name&quot;: &quot;baremetal&quot;,</span>
+<span class="s">      &quot;mtu&quot;: 1500,</span>
+<span class="s">      &quot;vip&quot;: true,</span>
+<span class="s">      &quot;ip_subnet&quot;: &quot;172.20.1.0/24&quot;,</span>
+<span class="s">      &quot;allocation_pools&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">          &quot;start&quot;: &quot;172.20.1.100&quot;,</span>
+<span class="s">          &quot;end&quot;: &quot;172.20.1.150&quot;</span>
+<span class="s">        }</span>
+<span class="s">      ],</span>
+<span class="s">      &quot;host_routes&quot;: [</span>
+<span class="s">        {</span>
+<span class="s">          &quot;destination&quot;: &quot;192.168.130.0/24&quot;,</span>
+<span class="s">          &quot;nexthop&quot;: &quot;172.20.1.1&quot;</span>
+<span class="s">        }</span>
+<span class="s">      ]</span>
+<span class="s">    }</span>
+<span class="s">  }</span>
+<span class="s">]</span>
+<span class="s">EOF</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">EDPM_COMPUTE_ADDITIONAL_NETWORKS</span><span class="o">=</span><span class="k">$(</span>jq<span class="w"> </span>-c<span class="w"> </span>.<span class="w"> </span>/tmp/addtional_nets.json<span class="k">)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">STANDALONE_COMPUTE_DRIVER</span><span class="o">=</span>ironic
+<span class="nb">export</span><span class="w"> </span><span class="nv">NTP_SERVER</span><span class="o">=</span>pool.ntp.org<span class="w">  </span><span class="c1"># Only neccecary if not on the RedHat network ...</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">EDPM_COMPUTE_CEPH_ENABLED</span><span class="o">=</span><span class="nb">false</span><span class="w">  </span><span class="c1"># Optional</span>
+</code></pre></div>
+<hr />
+<p>Use the <a href="https://github.com/openstack-k8s-operators/install_yamls/tree/main/devsetup">install_yamls devsetup</a>
+to create a virtual machine connected to the isolated networks.</p>
+<p>Create the edpm-compute-0 virtual machine.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>install_yamls/devsetup
+make<span class="w"> </span>standalone
+</code></pre></div>
+<h2 id="install-the-openstack-k8s-operators-openstack-operator">Install the openstack-k8s-operators (openstack-operator)<a class="headerlink" href="#install-the-openstack-k8s-operators-openstack-operator" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>..<span class="w">  </span><span class="c1"># back to install_yamls</span>
+make<span class="w"> </span>crc_storage
+make<span class="w"> </span>input
+make<span class="w"> </span>openstack
+</code></pre></div>
+<h3 id="convenience-steps">Convenience steps<a class="headerlink" href="#convenience-steps" title="Permanent link">#</a></h3>
+<p>To make our life easier we can copy the deployment passwords we'll be using
+in the <a href="https://openstack-k8s-operators.github.io/data-plane-adoption/openstack/backend_services_deployment/">backend services deployment phase of the data plane adoption</a>.</p>
+<div class="highlight"><pre><span></span><code>scp -i ~/install_yamls/out/edpm/ansibleee-ssh-key-id_rsa root@192.168.122.100:/root/tripleo-standalone-passwords.yaml ~/
+</code></pre></div>
+<p>If we want to be able to easily run <code>openstack</code> commands from the host without
+actually installing the package and copying the configuration file from the VM
+we can create a simple alias:</p>
+<div class="highlight"><pre><span></span><code>alias openstack=&quot;ssh -i ~/install_yamls/out/edpm/ansibleee-ssh-key-id_rsa root@192.168.122.100 OS_CLOUD=standalone openstack&quot;
+</code></pre></div>
+<h3 id="route-networks">Route networks<a class="headerlink" href="#route-networks" title="Permanent link">#</a></h3>
+<p>Route VLAN20 to have access to the MariaDB cluster:</p>
+<div class="highlight"><pre><span></span><code>EDPM_BRIDGE=$(sudo virsh dumpxml edpm-compute-0 | grep -oP &quot;(?&lt;=bridge=&#39;).*(?=&#39;)&quot;)
+sudo ip link add link $EDPM_BRIDGE name vlan20 type vlan id 20
+sudo ip addr add dev vlan20 172.17.0.222/24
+sudo ip link set up dev vlan20
+</code></pre></div>
+<h3 id="snapshotrevert">Snapshot/revert<a class="headerlink" href="#snapshotrevert" title="Permanent link">#</a></h3>
+<p>When the deployment of the Standalone OpenStack is finished, it's a
+good time to snapshot the machine, so that multiple Adoption attempts
+can be done without having to deploy from scratch.</p>
+<div class="highlight"><pre><span></span><code>cd ~/install_yamls/devsetup
+make standalone_snapshot
+</code></pre></div>
+<p>And when you wish to revert the Standalone deployment to the
+snapshotted state:</p>
+<div class="highlight"><pre><span></span><code>cd ~/install_yamls/devsetup
+make standalone_revert
+</code></pre></div>
+<p>Similar snapshot could be done for the CRC virtual machine, but the
+developer environment reset on CRC side can be done sufficiently via
+the install_yamls <code>*_cleanup</code> targets. This is further detailed in
+the section:
+<a href="https://openstack-k8s-operators.github.io/data-plane-adoption/contributing/development_environment/#reset-the-environment-to-pre-adoption-state">Reset the environment to pre-adoption state</a></p>
+<h3 id="create-a-workload-to-adopt">Create a workload to adopt<a class="headerlink" href="#create-a-workload-to-adopt" title="Permanent link">#</a></h3>
+<hr />
+<h4 id="ironic-steps">Ironic Steps<a class="headerlink" href="#ironic-steps" title="Permanent link">#</a></h4>
+<h2 id="enroll-baremetal-nodes-make-bmaas_generate_nodes_yaml-tail-n-2-tee-tmpironic_nodesyaml-scp-i-homeinstall_yamlsoutedpmansibleee-ssh-key-id_rsa-tmpironic_nodesyaml-root192168122100-ssh-i-homeinstall_yamlsoutedpmansibleee-ssh-key-id_rsa-root192168122100-export-os_cloudstandalone-openstack-baremetal-create-rootironic_nodesyaml-export-ironic_python_agent_ramdisk_idopenstack-image-show-deploy-ramdisk-c-id-f-value-export-ironic_python_agent_kernel_idopenstack-image-show-deploy-kernel-c-id-f-value-for-node-in-openstack-baremetal-node-list-c-uuid-f-value-do-openstack-baremetal-node-set-node-driver-info-deploy_ramdiskironic_python_agent_ramdisk_id-driver-info-deploy_kernelironic_python_agent_kernel_id-resource-class-baremetal-property-capabilitiesboot_modeuefi-done-create-a-baremetal-flavor-openstack-flavor-create-baremetal-ram-1024-vcpus-1-disk-15-property-resourcesvcpu0-property-resourcesmemory_mb0-property-resourcesdisk_gb0-property-resourcescustom_baremetal1-property-capabilitiesboot_modeuefi-create-image-imgfedora-cloud-base-38-16x86_64qcow2-urlhttpsdownloadfedoraprojectorgpubfedoralinuxreleases38cloudx86_64imagesimg-curl-o-tmpimg-l-url-disk_formatqemu-img-info-tmpimg-grep-file-format-awk-print-nf-openstack-image-create-container-format-bare-disk-format-disk_format-fedora-cloud-base-38-tmpimg-export-baremetal_nodesopenstack-baremetal-node-list-c-uuid-f-value-manage-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-node-manage-node-done-wait-for-nodes-to-reach-manageable-state-watch-openstack-baremetal-node-list-inspect-baremetal-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-introspection-start-node-done-wait-for-inspection-to-complete-watch-openstack-baremetal-introspection-list-provide-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-node-provide-node-done-wait-for-nodes-to-reach-available-state-watch-openstack-baremetal-node-list-create-an-instance-on-baremetal-openstack-server-show-baremetal-test-openstack-server-create-baremetal-test-flavor-baremetal-image-fedora-cloud-base-38-nic-net-idprovisioning-wait-check-instance-status-and-network-connectivity-openstack-server-show-baremetal-test-ping-c-4-openstack-server-show-baremetal-test-f-json-c-addresses-jq-r-addressesprovisioning0"><div class="highlight"><pre><span></span><code><span class="c1"># Enroll baremetal nodes</span>
+make<span class="w"> </span>bmaas_generate_nodes_yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-n<span class="w"> </span>+2<span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>/tmp/ironic_nodes.yaml
+scp<span class="w"> </span>-i<span class="w"> </span><span class="nv">$HOME</span>/install_yamls/out/edpm/ansibleee-ssh-key-id_rsa<span class="w"> </span>/tmp/ironic_nodes.yaml<span class="w"> </span>root@192.168.122.100:
+ssh<span class="w"> </span>-i<span class="w"> </span><span class="nv">$HOME</span>/install_yamls/out/edpm/ansibleee-ssh-key-id_rsa<span class="w"> </span>root@192.168.122.100
+
+<span class="nb">export</span><span class="w"> </span><span class="nv">OS_CLOUD</span><span class="o">=</span>standalone
+openstack<span class="w"> </span>baremetal<span class="w"> </span>create<span class="w"> </span>/root/ironic_nodes.yaml
+<span class="nb">export</span><span class="w"> </span><span class="nv">IRONIC_PYTHON_AGENT_RAMDISK_ID</span><span class="o">=</span><span class="k">$(</span>openstack<span class="w"> </span>image<span class="w"> </span>show<span class="w"> </span>deploy-ramdisk<span class="w"> </span>-c<span class="w"> </span>id<span class="w"> </span>-f<span class="w"> </span>value<span class="k">)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">IRONIC_PYTHON_AGENT_KERNEL_ID</span><span class="o">=</span><span class="k">$(</span>openstack<span class="w"> </span>image<span class="w"> </span>show<span class="w"> </span>deploy-kernel<span class="w"> </span>-c<span class="w"> </span>id<span class="w"> </span>-f<span class="w"> </span>value<span class="k">)</span>
+<span class="k">for</span><span class="w"> </span>node<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">$(</span>openstack<span class="w"> </span>baremetal<span class="w"> </span>node<span class="w"> </span>list<span class="w"> </span>-c<span class="w"> </span>UUID<span class="w"> </span>-f<span class="w"> </span>value<span class="k">)</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span>openstack<span class="w"> </span>baremetal<span class="w"> </span>node<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">$node</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--driver-info<span class="w"> </span><span class="nv">deploy_ramdisk</span><span class="o">=</span><span class="si">${</span><span class="nv">IRONIC_PYTHON_AGENT_RAMDISK_ID</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--driver-info<span class="w"> </span><span class="nv">deploy_kernel</span><span class="o">=</span><span class="si">${</span><span class="nv">IRONIC_PYTHON_AGENT_KERNEL_ID</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--resource-class<span class="w"> </span>baremetal<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--property<span class="w"> </span><span class="nv">capabilities</span><span class="o">=</span><span class="s1">&#39;boot_mode:uefi&#39;</span>
+<span class="k">done</span>
+
+<span class="c1"># Create a baremetal flavor</span>
+openstack<span class="w"> </span>flavor<span class="w"> </span>create<span class="w"> </span>baremetal<span class="w"> </span>--ram<span class="w"> </span><span class="m">1024</span><span class="w"> </span>--vcpus<span class="w"> </span><span class="m">1</span><span class="w"> </span>--disk<span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--property<span class="w"> </span>resources:VCPU<span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--property<span class="w"> </span>resources:MEMORY_MB<span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--property<span class="w"> </span>resources:DISK_GB<span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--property<span class="w"> </span>resources:CUSTOM_BAREMETAL<span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--property<span class="w"> </span>capabilities:boot_mode<span class="o">=</span><span class="s2">&quot;uefi&quot;</span>
+
+<span class="c1"># Create image</span>
+<span class="nv">IMG</span><span class="o">=</span>Fedora-Cloud-Base-38-1.6.x86_64.qcow2
+<span class="nv">URL</span><span class="o">=</span>https://download.fedoraproject.org/pub/fedora/linux/releases/38/Cloud/x86_64/images/<span class="nv">$IMG</span>
+curl<span class="w"> </span>-o<span class="w"> </span>/tmp/<span class="si">${</span><span class="nv">IMG</span><span class="si">}</span><span class="w"> </span>-L<span class="w"> </span><span class="nv">$URL</span>
+<span class="nv">DISK_FORMAT</span><span class="o">=</span><span class="k">$(</span>qemu-img<span class="w"> </span>info<span class="w"> </span>/tmp/<span class="si">${</span><span class="nv">IMG</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;file format:&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $NF}&#39;</span><span class="k">)</span>
+openstack<span class="w"> </span>image<span class="w"> </span>create<span class="w"> </span>--container-format<span class="w"> </span>bare<span class="w"> </span>--disk-format<span class="w"> </span><span class="si">${</span><span class="nv">DISK_FORMAT</span><span class="si">}</span><span class="w"> </span>Fedora-Cloud-Base-38<span class="w"> </span>&lt;<span class="w"> </span>/tmp/<span class="si">${</span><span class="nv">IMG</span><span class="si">}</span>
+
+<span class="nb">export</span><span class="w"> </span><span class="nv">BAREMETAL_NODES</span><span class="o">=</span><span class="k">$(</span>openstack<span class="w"> </span>baremetal<span class="w"> </span>node<span class="w"> </span>list<span class="w"> </span>-c<span class="w"> </span>UUID<span class="w"> </span>-f<span class="w"> </span>value<span class="k">)</span>
+<span class="c1"># Manage nodes</span>
+<span class="k">for</span><span class="w"> </span>node<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$BAREMETAL_NODES</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span>openstack<span class="w"> </span>baremetal<span class="w"> </span>node<span class="w"> </span>manage<span class="w"> </span><span class="nv">$node</span>
+<span class="k">done</span>
+
+<span class="c1"># Wait for nodes to reach &quot;manageable&quot; state</span>
+watch<span class="w"> </span>openstack<span class="w"> </span>baremetal<span class="w"> </span>node<span class="w"> </span>list
+
+<span class="c1"># Inspect baremetal nodes</span>
+<span class="k">for</span><span class="w"> </span>node<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$BAREMETAL_NODES</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span>openstack<span class="w"> </span>baremetal<span class="w"> </span>introspection<span class="w"> </span>start<span class="w"> </span><span class="nv">$node</span>
+<span class="k">done</span>
+
+<span class="c1"># Wait for inspection to complete</span>
+watch<span class="w"> </span>openstack<span class="w"> </span>baremetal<span class="w"> </span>introspection<span class="w"> </span>list
+
+<span class="c1"># Provide nodes</span>
+<span class="k">for</span><span class="w"> </span>node<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$BAREMETAL_NODES</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span>openstack<span class="w"> </span>baremetal<span class="w"> </span>node<span class="w"> </span>provide<span class="w"> </span><span class="nv">$node</span>
+<span class="k">done</span>
+
+<span class="c1"># Wait for nodes to reach &quot;available&quot; state</span>
+watch<span class="w"> </span>openstack<span class="w"> </span>baremetal<span class="w"> </span>node<span class="w"> </span>list
+
+<span class="c1"># Create an instance on baremetal</span>
+openstack<span class="w"> </span>server<span class="w"> </span>show<span class="w"> </span>baremetal-test<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>openstack<span class="w"> </span>server<span class="w"> </span>create<span class="w"> </span>baremetal-test<span class="w"> </span>--flavor<span class="w"> </span>baremetal<span class="w"> </span>--image<span class="w"> </span>Fedora-Cloud-Base-38<span class="w"> </span>--nic<span class="w"> </span>net-id<span class="o">=</span>provisioning<span class="w"> </span>--wait
+<span class="o">}</span>
+
+<span class="c1"># Check instance status and network connectivity</span>
+openstack<span class="w"> </span>server<span class="w"> </span>show<span class="w"> </span>baremetal-test
+ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="k">$(</span>openstack<span class="w"> </span>server<span class="w"> </span>show<span class="w"> </span>baremetal-test<span class="w"> </span>-f<span class="w"> </span>json<span class="w"> </span>-c<span class="w"> </span>addresses<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span>.addresses.provisioning<span class="o">[</span><span class="m">0</span><span class="o">]</span><span class="k">)</span>
+</code></pre></div><a class="headerlink" href="#enroll-baremetal-nodes-make-bmaas_generate_nodes_yaml-tail-n-2-tee-tmpironic_nodesyaml-scp-i-homeinstall_yamlsoutedpmansibleee-ssh-key-id_rsa-tmpironic_nodesyaml-root192168122100-ssh-i-homeinstall_yamlsoutedpmansibleee-ssh-key-id_rsa-root192168122100-export-os_cloudstandalone-openstack-baremetal-create-rootironic_nodesyaml-export-ironic_python_agent_ramdisk_idopenstack-image-show-deploy-ramdisk-c-id-f-value-export-ironic_python_agent_kernel_idopenstack-image-show-deploy-kernel-c-id-f-value-for-node-in-openstack-baremetal-node-list-c-uuid-f-value-do-openstack-baremetal-node-set-node-driver-info-deploy_ramdiskironic_python_agent_ramdisk_id-driver-info-deploy_kernelironic_python_agent_kernel_id-resource-class-baremetal-property-capabilitiesboot_modeuefi-done-create-a-baremetal-flavor-openstack-flavor-create-baremetal-ram-1024-vcpus-1-disk-15-property-resourcesvcpu0-property-resourcesmemory_mb0-property-resourcesdisk_gb0-property-resourcescustom_baremetal1-property-capabilitiesboot_modeuefi-create-image-imgfedora-cloud-base-38-16x86_64qcow2-urlhttpsdownloadfedoraprojectorgpubfedoralinuxreleases38cloudx86_64imagesimg-curl-o-tmpimg-l-url-disk_formatqemu-img-info-tmpimg-grep-file-format-awk-print-nf-openstack-image-create-container-format-bare-disk-format-disk_format-fedora-cloud-base-38-tmpimg-export-baremetal_nodesopenstack-baremetal-node-list-c-uuid-f-value-manage-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-node-manage-node-done-wait-for-nodes-to-reach-manageable-state-watch-openstack-baremetal-node-list-inspect-baremetal-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-introspection-start-node-done-wait-for-inspection-to-complete-watch-openstack-baremetal-introspection-list-provide-nodes-for-node-in-baremetal_nodes-do-openstack-baremetal-node-provide-node-done-wait-for-nodes-to-reach-available-state-watch-openstack-baremetal-node-list-create-an-instance-on-baremetal-openstack-server-show-baremetal-test-openstack-server-create-baremetal-test-flavor-baremetal-image-fedora-cloud-base-38-nic-net-idprovisioning-wait-check-instance-status-and-network-connectivity-openstack-server-show-baremetal-test-ping-c-4-openstack-server-show-baremetal-test-f-json-c-addresses-jq-r-addressesprovisioning0" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>export OS_CLOUD=standalone
+source ~/install_yamls/devsetup/scripts/edpm-deploy-instance.sh
+</code></pre></div>
+<p>Confirm the image UUID can be seen in Ceph's images pool.
+<div class="highlight"><pre><span></span><code>ssh -i ~/install_yamls/out/edpm/ansibleee-ssh-key-id_rsa root@192.168.122.100 sudo cephadm shell -- rbd -p images ls -l
+</code></pre></div></p>
+<p>Create a Cinder volume, a backup from it, and snapshot it.
+<div class="highlight"><pre><span></span><code>openstack volume create --image cirros --bootable --size 1 disk
+openstack volume backup create --name backup disk
+openstack volume snapshot create --volume disk snapshot
+</code></pre></div></p>
+<p>Add volume to the test VM
+<div class="highlight"><pre><span></span><code>openstack server add volume test disk
+</code></pre></div></p>
+<h2 id="performing-the-data-plane-adoption">Performing the Data Plane Adoption<a class="headerlink" href="#performing-the-data-plane-adoption" title="Permanent link">#</a></h2>
+<p>The development environment is now set up, you can go to the <a href="https://openstack-k8s-operators.github.io/data-plane-adoption/">Adoption
+documentation</a>
+and perform adoption manually, or run the <a href="https://openstack-k8s-operators.github.io/data-plane-adoption/contributing/tests/">test
+suite</a>
+against your environment.</p>
+<h2 id="reset-the-environment-to-pre-adoption-state">Reset the environment to pre-adoption state<a class="headerlink" href="#reset-the-environment-to-pre-adoption-state" title="Permanent link">#</a></h2>
+<p>The development environment must be rolled back in case we want to execute another Adoption run.</p>
+<p>Delete the data-plane and control-plane resources from the CRC vm
+<div class="highlight"><pre><span></span><code>oc delete osdp openstack
+oc delete oscp openstack
+</code></pre></div></p>
+<p>Revert the standalone vm to the snapshotted state</p>
+<p><div class="highlight"><pre><span></span><code>cd ~/install_yamls/devsetup
+make standalone_revert
+</code></pre></div>
+Clean up and initialize the storage PVs in CRC vm
+<div class="highlight"><pre><span></span><code>cd ..
+make crc_storage_cleanup
+make crc_storage
+</code></pre></div></p>
+<h2 id="experimenting-with-an-additional-compute-node">Experimenting with an additional compute node<a class="headerlink" href="#experimenting-with-an-additional-compute-node" title="Permanent link">#</a></h2>
+<p>The following is not on the critical path of preparing the development
+environment for Adoption, but it shows how to make the environment
+work with an additional compute node VM.</p>
+<p>The remaining steps should be completed on the hypervisor hosting crc
+and edpm-compute-0.</p>
+<h3 id="deploy-ng-control-plane-with-ceph">Deploy NG Control Plane with Ceph<a class="headerlink" href="#deploy-ng-control-plane-with-ceph" title="Permanent link">#</a></h3>
+<p>Export the Ceph configuration from edpm-compute-0 into a secret.
+<div class="highlight"><pre><span></span><code>SSH=$(ssh -i ~/install_yamls/out/edpm/ansibleee-ssh-key-id_rsa root@192.168.122.100)
+KEY=$($SSH &quot;cat /etc/ceph/ceph.client.openstack.keyring | base64 -w 0&quot;)
+CONF=$($SSH &quot;cat /etc/ceph/ceph.conf | base64 -w 0&quot;)
+
+cat &lt;&lt;EOF &gt; ceph_secret.yaml
+apiVersion: v1
+data:
+  ceph.client.openstack.keyring: $KEY
+  ceph.conf: $CONF
+kind: Secret
+metadata:
+  name: ceph-conf-files
+  namespace: openstack
+type: Opaque
+EOF
+
+oc create -f ceph_secret.yaml
+</code></pre></div>
+Deploy the NG control plane with Ceph as backend for Glance and
+Cinder. As described in
+<a href="https://github.com/openstack-k8s-operators/install_yamls/tree/main">the install_yamls README</a>,
+use the sample config located at
+<a href="https://github.com/openstack-k8s-operators/openstack-operator/blob/main/config/samples/core_v1beta1_openstackcontrolplane_network_isolation_ceph.yaml">https://github.com/openstack-k8s-operators/openstack-operator/blob/main/config/samples/core_v1beta1_openstackcontrolplane_network_isolation_ceph.yaml</a>
+but make sure to replace the <code>_FSID_</code> in the sample with the one from
+the secret created in the previous step.
+<div class="highlight"><pre><span></span><code>curl -o /tmp/core_v1beta1_openstackcontrolplane_network_isolation_ceph.yaml https://raw.githubusercontent.com/openstack-k8s-operators/openstack-operator/main/config/samples/core_v1beta1_openstackcontrolplane_network_isolation_ceph.yaml
+FSID=$(oc get secret ceph-conf-files -o json | jq -r &#39;.data.&quot;ceph.conf&quot;&#39; | base64 -d | grep fsid | sed -e &#39;s/fsid = //&#39;) &amp;&amp; echo $FSID
+sed -i &quot;s/_FSID_/${FSID}/&quot; /tmp/core_v1beta1_openstackcontrolplane_network_isolation_ceph.yaml
+oc apply -f /tmp/core_v1beta1_openstackcontrolplane_network_isolation_ceph.yaml
+</code></pre></div></p>
+<p>A NG control plane which uses the same Ceph backend should now be
+functional. If you create a test image on the NG system to confirm
+it works from the configuration above, be sure to read the warning
+in the next section.</p>
+<p>Before beginning adoption testing or development you may wish to
+deploy an EDPM node as described in the following section.</p>
+<h3 id="warning-about-two-openstacks-and-one-ceph">Warning about two OpenStacks and one Ceph<a class="headerlink" href="#warning-about-two-openstacks-and-one-ceph" title="Permanent link">#</a></h3>
+<p>Though workloads can be created in the NG deployment to test, be
+careful not to confuse them with workloads from the Wallaby cluster
+to be migrated. The following scenario is now possible.</p>
+<p>A Glance image exists on the Wallaby OpenStack to be adopted.
+<div class="highlight"><pre><span></span><code>[stack@standalone standalone]$ export OS_CLOUD=standalone
+[stack@standalone standalone]$ openstack image list
++--------------------------------------+--------+--------+
+| ID                                   | Name   | Status |
++--------------------------------------+--------+--------+
+| 33a43519-a960-4cd0-a593-eca56ee553aa | cirros | active |
++--------------------------------------+--------+--------+
+[stack@standalone standalone]$
+</code></pre></div>
+If you now create an image with the NG cluster, then a Glance image
+will exsit on the NG OpenStack which will adopt the workloads of the
+wallaby.
+<div class="highlight"><pre><span></span><code>[fultonj@hamfast ng]$ export OS_CLOUD=default
+[fultonj@hamfast ng]$ export OS_PASSWORD=12345678
+[fultonj@hamfast ng]$ openstack image list
++--------------------------------------+--------+--------+
+| ID                                   | Name   | Status |
++--------------------------------------+--------+--------+
+| 4ebccb29-193b-4d52-9ffd-034d440e073c | cirros | active |
++--------------------------------------+--------+--------+
+[fultonj@hamfast ng]$
+</code></pre></div>
+Both Glance images are stored in the same Ceph pool.
+<div class="highlight"><pre><span></span><code>ssh -i ~/install_yamls/out/edpm/ansibleee-ssh-key-id_rsa root@192.168.122.100 sudo cephadm shell -- rbd -p images ls -l
+Inferring fsid 7133115f-7751-5c2f-88bd-fbff2f140791
+Using recent ceph image quay.rdoproject.org/tripleowallabycentos9/daemon@sha256:aa259dd2439dfaa60b27c9ebb4fb310cdf1e8e62aa7467df350baf22c5d992d8
+NAME                                       SIZE     PARENT  FMT  PROT  LOCK
+33a43519-a960-4cd0-a593-eca56ee553aa         273 B            2
+33a43519-a960-4cd0-a593-eca56ee553aa@snap    273 B            2  yes
+4ebccb29-193b-4d52-9ffd-034d440e073c       112 MiB            2
+4ebccb29-193b-4d52-9ffd-034d440e073c@snap  112 MiB            2  yes
+</code></pre></div>
+However, as far as each Glance service is concerned each has one
+image. Thus, in order to avoid confusion during adoption the test
+Glance image on the NG OpenStack should be deleted.
+<div class="highlight"><pre><span></span><code>openstack image delete 4ebccb29-193b-4d52-9ffd-034d440e073c
+</code></pre></div>
+Connecting the NG OpenStack to the existing Ceph cluster is part of
+the adoption procedure so that the data migration can be minimized
+but understand the implications of the above example.</p>
+<h3 id="deploy-edpm-compute-1">Deploy edpm-compute-1<a class="headerlink" href="#deploy-edpm-compute-1" title="Permanent link">#</a></h3>
+<p>edpm-compute-0 is not available as a standard EDPM system to be
+managed by <a href="https://openstack-k8s-operators.github.io/edpm-ansible">edpm-ansible</a>
+or
+<a href="https://openstack-k8s-operators.github.io/dataplane-operator">dataplane-operator</a>
+because it hosts the wallaby deployment which will be adopted
+and after adoption it will only host the Ceph server.</p>
+<p>Use the <a href="https://github.com/openstack-k8s-operators/install_yamls/tree/main/devsetup">install_yamls devsetup</a>
+to create additional virtual machines and be sure
+that the <code>EDPM_COMPUTE_SUFFIX</code> is set to <code>1</code> or greater.
+Do not set <code>EDPM_COMPUTE_SUFFIX</code> to <code>0</code> or you could delete
+the Wallaby system created in the previous section.</p>
+<p>When deploying EDPM nodes add an <code>extraMounts</code> like the following in
+the <code>OpenStackDataPlaneNodeSet</code> CR <code>nodeTemplate</code> so that they will be
+configured to use the same Ceph cluster.</p>
+<div class="highlight"><pre><span></span><code>    edpm-compute:
+      nodeTemplate:
+        extraMounts:
+        - extraVolType: Ceph
+          volumes:
+          - name: ceph
+            secret:
+              secretName: ceph-conf-files
+          mounts:
+          - name: ceph
+            mountPath: &quot;/etc/ceph&quot;
+            readOnly: true
+</code></pre></div>
+<p>A NG data plane which uses the same Ceph backend should now be
+functional. Be careful about not confusing new workloads to test the
+NG OpenStack with the Wallaby OpenStack as described in the previous
+section.</p>
+<h3 id="begin-adoption-testing-or-development">Begin Adoption Testing or Development<a class="headerlink" href="#begin-adoption-testing-or-development" title="Permanent link">#</a></h3>
+<p>We should now have:</p>
+<ul>
+<li>An NG glance service based on Antelope running on CRC</li>
+<li>An TripleO-deployed glance serviced running on edpm-compute-0</li>
+<li>Both services have the same Ceph backend</li>
+<li>Each service has their own independent database</li>
+</ul>
+<p>An environment above is assumed to be available in the
+<a href="https://openstack-k8s-operators.github.io/data-plane-adoption/openstack/glance_adoption">Glance Adoption documentation</a>. You
+may now follow other Data Plane Adoption procedures described in the
+<a href="https://openstack-k8s-operators.github.io/data-plane-adoption">documentation</a>.
+The same pattern can be applied to other services.</p>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      Last update:
+      2023-10-12
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["search.suggest", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.cd18aaf1.min.js"></script>
+      
+    
+  </body>
+</html>

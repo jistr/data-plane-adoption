@@ -1,0 +1,1803 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OpenStack Data Plane Adoption">
+      
+      
+        <meta name="author" content="OpenStack Team">
+      
+      
+        <link rel="canonical" href="https://openstack-k8s-operators.github.io/data-plane-adoption/ceph/ceph_rgw/">
+      
+      
+        <link rel="prev" href="../ceph_rbd/">
+      
+      
+        <link rel="next" href="../../contributing/documentation/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.14">
+    
+    
+      
+        <title>Ceph RGW migration - OpenStack Data Plane Adoption</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.fad675c6.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#data-plane-adoption-ceph-rgw-migration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenStack Data Plane Adoption" class="md-header__button md-logo" aria-label="OpenStack Data Plane Adoption" data-md-component="logo">
+      
+  <img src="../../images/openstack-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenStack Data Plane Adoption
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Ceph RGW migration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/openstack-k8s-operators/data-plane-adoption" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openstack-k8s-operators/data-plane-adoption
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenStack Data Plane Adoption" class="md-nav__button md-logo" aria-label="OpenStack Data Plane Adoption" data-md-component="logo">
+      
+  <img src="../../images/openstack-logo.png" alt="logo">
+
+    </a>
+    OpenStack Data Plane Adoption
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/openstack-k8s-operators/data-plane-adoption" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    openstack-k8s-operators/data-plane-adoption
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    OpenStack
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            OpenStack
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/planning/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Planning the new deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/backend_services_deployment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Backend services deployment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/pull_openstack_configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pull Openstack configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/stop_openstack_services/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stop OpenStack services
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/mariadb_copy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MariaDB data copy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/ovn_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OVN data migration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/keystone_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Keystone adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/neutron_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Neutron adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/ceph_backend_configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ceph backend configuration (if applicable)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/glance_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glance adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/placement_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Placement adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/cinder_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cinder adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/horizon_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Horizon adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/edpm_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EDPM adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/ironic_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ironic adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/heat_adoption/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Heat adoption
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openstack/troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Ceph
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Ceph
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ceph_rbd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ceph RBD migration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Ceph RGW migration
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Ceph RGW migration
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ceph-daemon-cardinality" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ceph Daemon Cardinality
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Status
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisite-check-the-frontend-network-controller-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisite: check the frontend network (Controller nodes)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#propagate-the-haproxy-frontend-network-to-cephstorage-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Propagate the HaProxy frontend network to CephStorage nodes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migrate-the-rgw-backends" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migrate the RGW backends
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migrate the RGW backends">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#note" class="md-nav__link">
+    <span class="md-ellipsis">
+      NOTE
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-a-ceph-ingressdaemon" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploy a Ceph IngressDaemon
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-the-object-store-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Update the object-store endpoints
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional Resources
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributing to documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/development_environment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requirements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ceph-daemon-cardinality" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ceph Daemon Cardinality
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Status
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisite-check-the-frontend-network-controller-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisite: check the frontend network (Controller nodes)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#propagate-the-haproxy-frontend-network-to-cephstorage-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Propagate the HaProxy frontend network to CephStorage nodes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migrate-the-rgw-backends" class="md-nav__link">
+    <span class="md-ellipsis">
+      Migrate the RGW backends
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Migrate the RGW backends">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#note" class="md-nav__link">
+    <span class="md-ellipsis">
+      NOTE
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-a-ceph-ingressdaemon" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deploy a Ceph IngressDaemon
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-the-object-store-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Update the object-store endpoints
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional Resources
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="data-plane-adoption-ceph-rgw-migration">Data Plane adoption - Ceph RGW Migration<a class="headerlink" href="#data-plane-adoption-ceph-rgw-migration" title="Permanent link">#</a></h1>
+<p>In this scenario, assuming Ceph is already &gt;= 5, either for HCI or dedicated
+Storage nodes, the RGW daemons living in the OpenStack Controller nodes will be
+migrated into the existing external RHEL nodes (typically the Compute nodes
+for an HCI environment or CephStorage nodes in the remaining use cases).</p>
+<h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">#</a></h2>
+<ul>
+<li>Ceph is &gt;= 5 and managed by cephadm/orchestrator</li>
+<li>An undercloud is still available: nodes and networks are managed by TripleO</li>
+</ul>
+<h2 id="ceph-daemon-cardinality">Ceph Daemon Cardinality<a class="headerlink" href="#ceph-daemon-cardinality" title="Permanent link">#</a></h2>
+<p><strong>Ceph 5+</strong> applies <a href="https://access.redhat.com/articles/1548993">strict constraints</a> in the way daemons can be colocated
+within the same node. The resulting topology depends on the available hardware,
+as well as the amount of Ceph services present in the Controller nodes which are
+going to be retired. The following document describes the procedure required
+to migrate the RGW component (and keep an HA model using the <a href="https://docs.ceph.com/en/latest/cephadm/services/rgw/#high-availability-service-for-rgw">Ceph Ingress
+daemon</a> in a common TripleO scenario where Controller nodes represent the
+<a href="https://github.com/openstack/tripleo-ansible/blob/master/tripleo_ansible/roles/tripleo_cephadm/tasks/rgw.yaml#L26-L30">spec placement</a> where the service is deployed. As a general rule, the
+number of services that can be migrated depends on the number of available
+nodes in the cluster. The following diagrams cover the distribution of the Ceph
+daemons on the CephStorage nodes where at least three nodes are required in a
+scenario that sees only RGW and RBD (no dashboard):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>osd</td>
+<td>mon/mgr/crash</td>
+<td>rgw/ingress</td>
+</tr>
+<tr>
+<td>osd</td>
+<td>mon/mgr/crash</td>
+<td>rgw/ingress</td>
+</tr>
+<tr>
+<td>osd</td>
+<td>mon/mgr/crash</td>
+<td>rgw/ingress</td>
+</tr>
+</tbody>
+</table>
+<p>With dashboard, and without Manila at least four nodes are required (dashboard
+has no failover):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>osd</td>
+<td>mon/mgr/crash</td>
+<td>rgw/ingress</td>
+</tr>
+<tr>
+<td>osd</td>
+<td>mon/mgr/crash</td>
+<td>rgw/ingress</td>
+</tr>
+<tr>
+<td>osd</td>
+<td>mon/mgr/crash</td>
+<td>dashboard/grafana</td>
+</tr>
+<tr>
+<td>osd</td>
+<td>rgw/ingress</td>
+<td>(free)</td>
+</tr>
+</tbody>
+</table>
+<p>With dashboard and Manila 5 nodes minimum are required (and dashboard has no
+failover):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>osd</td>
+<td>mon/mgr/crash</td>
+<td>rgw/ingress</td>
+</tr>
+<tr>
+<td>osd</td>
+<td>mon/mgr/crash</td>
+<td>rgw/ingress</td>
+</tr>
+<tr>
+<td>osd</td>
+<td>mon/mgr/crash</td>
+<td>mds/ganesha/ingress</td>
+</tr>
+<tr>
+<td>osd</td>
+<td>rgw/ingress</td>
+<td>mds/ganesha/ingress</td>
+</tr>
+<tr>
+<td>osd</td>
+<td>mds/ganesha/ingress</td>
+<td>dashboard/grafana</td>
+</tr>
+</tbody>
+</table>
+<h2 id="current-status">Current Status<a class="headerlink" href="#current-status" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>(undercloud) [stack@undercloud-0 ~]$ metalsmith list
+
+
+    +------------------------+    +----------------+
+    | IP Addresses           |    |  Hostname      |
+    +------------------------+    +----------------+
+    | ctlplane=192.168.24.25 |    | cephstorage-0  |
+    | ctlplane=192.168.24.10 |    | cephstorage-1  |
+    | ctlplane=192.168.24.32 |    | cephstorage-2  |
+    | ctlplane=192.168.24.28 |    | compute-0      |
+    | ctlplane=192.168.24.26 |    | compute-1      |
+    | ctlplane=192.168.24.43 |    | controller-0   |
+    | ctlplane=192.168.24.7  |    | controller-1   |
+    | ctlplane=192.168.24.41 |    | controller-2   |
+    +------------------------+    +----------------+
+</code></pre></div>
+<p>SSH into <code>controller-0</code> and check the <code>pacemaker</code> status: this will help
+identify the relevant information that we need to know before starting the
+RGW migration.</p>
+<div class="highlight"><pre><span></span><code>Full List of Resources:
+  * ip-192.168.24.46    (ocf:heartbeat:IPaddr2):        Started controller-0
+  * ip-10.0.0.103       (ocf:heartbeat:IPaddr2):        Started controller-1
+  * ip-172.17.1.129     (ocf:heartbeat:IPaddr2):        Started controller-2
+  * ip-172.17.3.68      (ocf:heartbeat:IPaddr2):        Started controller-0
+  * ip-172.17.4.37      (ocf:heartbeat:IPaddr2):        Started controller-1
+  * Container bundle set: haproxy-bundle
+
+[undercloud-0.ctlplane.redhat.local:8787/rh-osbs/rhosp17-openstack-haproxy:pcmklatest]:
+    * haproxy-bundle-podman-0   (ocf:heartbeat:podman):  Started controller-2
+    * haproxy-bundle-podman-1   (ocf:heartbeat:podman):  Started controller-0
+    * haproxy-bundle-podman-2   (ocf:heartbeat:podman):  Started controller-1
+</code></pre></div>
+<p>Use the <code>ip</code> command to identify the ranges of the storage networks.</p>
+<div class="highlight"><pre><span></span><code>[heat-admin@controller-0 ~]$ ip -o -4 a
+
+1: lo   inet 127.0.0.1/8 scope host lo\     valid_lft forever preferred_lft forever
+2: enp1s0   inet 192.168.24.45/24 brd 192.168.24.255 scope global enp1s0\       valid_lft forever preferred_lft forever
+2: enp1s0   inet 192.168.24.46/32 brd 192.168.24.255 scope global enp1s0\       valid_lft forever preferred_lft forever
+7: br-ex    inet 10.0.0.122/24 brd 10.0.0.255 scope global br-ex\       valid_lft forever preferred_lft forever
+8: vlan70   inet 172.17.5.22/24 brd 172.17.5.255 scope global vlan70\       valid_lft forever preferred_lft forever
+8: vlan70   inet 172.17.5.94/32 brd 172.17.5.255 scope global vlan70\       valid_lft forever preferred_lft forever
+9: vlan50   inet 172.17.2.140/24 brd 172.17.2.255 scope global vlan50\      valid_lft forever preferred_lft forever
+10: vlan30  inet 172.17.3.73/24 brd 172.17.3.255 scope global vlan30\       valid_lft forever preferred_lft forever
+10: vlan30  inet 172.17.3.68/32 brd 172.17.3.255 scope global vlan30\       valid_lft forever preferred_lft forever
+11: vlan20  inet 172.17.1.88/24 brd 172.17.1.255 scope global vlan20\       valid_lft forever preferred_lft forever
+12: vlan40  inet 172.17.4.24/24 brd 172.17.4.255 scope global vlan40\       valid_lft forever preferred_lft forever
+</code></pre></div>
+<p>In this example:</p>
+<ul>
+<li>vlan30 represents the Storage Network, where the new RGW instances should be
+  started on the CephStorage nodes</li>
+<li>br-ex represents the External Network, which is where in the current
+  environment, haproxy has the frontend VIP assigned</li>
+</ul>
+<h2 id="prerequisite-check-the-frontend-network-controller-nodes">Prerequisite: check the frontend network (Controller nodes)<a class="headerlink" href="#prerequisite-check-the-frontend-network-controller-nodes" title="Permanent link">#</a></h2>
+<p>Identify the network that we previously had in haproxy and propagate it (via
+TripleO) to the CephStorage nodes. This network is used to reserve a new VIP
+that will be owned by Ceph and used as the entry point for the RGW service.</p>
+<p>ssh into <code>controller-0</code> and check the current HaProxy configuration until we
+find <code>ceph_rgw</code> section:</p>
+<div class="highlight"><pre><span></span><code>$ less /var/lib/config-data/puppet-generated/haproxy/etc/haproxy/haproxy.cfg
+
+...
+...
+listen ceph_rgw
+  bind 10.0.0.103:8080 transparent
+  bind 172.17.3.68:8080 transparent
+  mode http
+  balance leastconn
+  http-request set-header X-Forwarded-Proto https if { ssl_fc }
+  http-request set-header X-Forwarded-Proto http if !{ ssl_fc }
+  http-request set-header X-Forwarded-Port %[dst_port]
+  option httpchk GET /swift/healthcheck
+  option httplog
+  option forwardfor
+  server controller-0.storage.redhat.local 172.17.3.73:8080 check fall 5 inter 2000 rise 2
+  server controller-1.storage.redhat.local 172.17.3.146:8080 check fall 5 inter 2000 rise 2
+  server controller-2.storage.redhat.local 172.17.3.156:8080 check fall 5 inter 2000 rise 2
+</code></pre></div>
+<p>Double check the network used as HaProxy frontend:</p>
+<div class="highlight"><pre><span></span><code>[controller-0]$ ip -o -4 a
+
+...
+7: br-ex    inet 10.0.0.106/24 brd 10.0.0.255 scope global br-ex\       valid_lft forever preferred_lft forever
+...
+</code></pre></div>
+<p>As described in the previous section, the check on controller-0 shows that we
+are exposing the services using the external network, which is not present in
+the CephStorage nodes, and we need to propagate it via TripleO.</p>
+<h2 id="propagate-the-haproxy-frontend-network-to-cephstorage-nodes">Propagate the <code>HaProxy</code> frontend network to <code>CephStorage</code> nodes<a class="headerlink" href="#propagate-the-haproxy-frontend-network-to-cephstorage-nodes" title="Permanent link">#</a></h2>
+<p>Change the nic template used to define the ceph-storage network interfaces and
+add the new config section.</p>
+<div class="highlight"><pre><span></span><code>---
+network_config:
+- type: interface
+  name: nic1
+  use_dhcp: false
+  dns_servers: {{ ctlplane_dns_nameservers }}
+  addresses:
+  - ip_netmask: {{ ctlplane_ip }}/{{ ctlplane_subnet_cidr }}
+  routes: {{ ctlplane_host_routes }}
+- type: vlan
+  vlan_id: {{ storage_mgmt_vlan_id }}
+  device: nic1
+  addresses:
+  - ip_netmask: {{ storage_mgmt_ip }}/{{ storage_mgmt_cidr }}
+  routes: {{ storage_mgmt_host_routes }}
+- type: interface
+  name: nic2
+  use_dhcp: false
+  defroute: false
+- type: vlan
+  vlan_id: {{ storage_vlan_id }}
+  device: nic2
+  addresses:
+  - ip_netmask: {{ storage_ip }}/{{ storage_cidr }}
+  routes: {{ storage_host_routes }}
+- type: ovs_bridge
+  name: {{ neutron_physical_bridge_name }}
+  dns_servers: {{ ctlplane_dns_nameservers }}
+  domain: {{ dns_search_domains }}
+  use_dhcp: false
+  addresses:
+  - ip_netmask: {{ external_ip }}/{{ external_cidr }}
+  routes: {{ external_host_routes }}
+  members:
+  - type: interface
+    name: nic3
+    primary: true
+</code></pre></div>
+<p>In addition, add the <strong>External</strong> Network to the <code>baremetal.yaml</code> file used by
+metalsmith and run the <code>overcloud node provision</code> command passing the
+<code>--network-config</code> option:</p>
+<div class="highlight"><pre><span></span><code>- name: CephStorage
+  count: 3
+  hostname_format: cephstorage-%index%
+  instances:
+  - hostname: cephstorage-0
+  name: ceph-0
+  - hostname: cephstorage-1
+  name: ceph-1
+  - hostname: cephstorage-2
+  name: ceph-2
+  defaults:
+  profile: ceph-storage
+  network_config:
+      template: /home/stack/composable_roles/network/nic-configs/ceph-storage.j2
+  networks:
+  - network: ctlplane
+      vif: true
+  - network: storage
+  - network: storage_mgmt
+  - network: external
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>(undercloud) [stack@undercloud-0]$
+
+openstack overcloud node provision
+   -o overcloud-baremetal-deployed-0.yaml
+   --stack overcloud
+   --network-config -y
+  $PWD/network/baremetal_deployment.yaml
+</code></pre></div>
+<p>Check the new network on the <code>CephStorage</code> nodes:</p>
+<div class="highlight"><pre><span></span><code>[root@cephstorage-0 ~]# ip -o -4 a
+
+1: lo   inet 127.0.0.1/8 scope host lo\     valid_lft forever preferred_lft forever
+2: enp1s0   inet 192.168.24.54/24 brd 192.168.24.255 scope global enp1s0\       valid_lft forever preferred_lft forever
+11: vlan40  inet 172.17.4.43/24 brd 172.17.4.255 scope global vlan40\       valid_lft forever preferred_lft forever
+12: vlan30  inet 172.17.3.23/24 brd 172.17.3.255 scope global vlan30\       valid_lft forever preferred_lft forever
+14: br-ex   inet 10.0.0.133/24 brd 10.0.0.255 scope global br-ex\       valid_lft forever preferred_lft forever
+</code></pre></div>
+<p>And now it’s time to start migrating the RGW backends and build the ingress on
+top of them.</p>
+<h2 id="migrate-the-rgw-backends">Migrate the RGW backends<a class="headerlink" href="#migrate-the-rgw-backends" title="Permanent link">#</a></h2>
+<p>To match the cardinality diagram we use cephadm labels to refer to a group of
+nodes where a given daemon type should be deployed.</p>
+<p>Add the RGW label to the cephstorage nodes:</p>
+<div class="highlight"><pre><span></span><code>for i in 0 1 2; {
+    ceph orch host label add cephstorage-$i rgw;
+}
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[ceph: root@controller-0 /]#
+
+for i in 0 1 2; {
+    ceph orch host label add cephstorage-$i rgw;
+}
+
+Added label rgw to host cephstorage-0
+Added label rgw to host cephstorage-1
+Added label rgw to host cephstorage-2
+
+[ceph: root@controller-0 /]# ceph orch host ls
+
+HOST        ADDR        LABELS          STATUS
+cephstorage-0  192.168.24.54  osd rgw
+cephstorage-1  192.168.24.44  osd rgw
+cephstorage-2  192.168.24.30  osd rgw
+controller-0   192.168.24.45  _admin mon mgr
+controller-1   192.168.24.11  _admin mon mgr
+controller-2   192.168.24.38  _admin mon mgr
+
+6 hosts in cluster
+</code></pre></div>
+<p>During the overcloud deployment, RGW is applied at step2
+(external_deployment_steps), and a cephadm compatible spec is generated in
+<code>/home/ceph-admin/specs/rgw</code> from the <a href="https://github.com/openstack/tripleo-ansible/blob/master/tripleo_ansible/ansible_plugins/modules/ceph_mkspec.py">ceph_mkspec</a> ansible module.
+Find and patch the RGW spec, specifying the right placement using the labels
+approach, and change the rgw backend port to <strong>8090</strong> to avoid conflicts
+with the <a href="https://github.com/openstack/tripleo-ansible/blob/master/tripleo_ansible/roles/tripleo_cephadm/tasks/rgw.yaml#L26-L30">Ceph Ingress Daemon</a> (*)</p>
+<div class="highlight"><pre><span></span><code>[root@controller-0 heat-admin]# cat rgw
+
+networks:
+- 172.17.3.0/24
+placement:
+  hosts:
+  - controller-0
+  - controller-1
+  - controller-2
+service_id: rgw
+service_name: rgw.rgw
+service_type: rgw
+spec:
+  rgw_frontend_port: 8080
+  rgw_realm: default
+  rgw_zone: default
+</code></pre></div>
+<p>Patch the spec replacing controller nodes with the label key</p>
+<div class="highlight"><pre><span></span><code>---
+networks:
+- 172.17.3.0/24
+placement:
+  label: rgw
+service_id: rgw
+service_name: rgw.rgw
+service_type: rgw
+spec:
+  rgw_frontend_port: 8090
+  rgw_realm: default
+  rgw_zone: default
+</code></pre></div>
+<p>(*) <a href="https://github.com/ceph/ceph/blob/main/src/cephadm/cephadm.py#L1423-L1446">cephadm_check_port</a></p>
+<p>Apply the new RGW spec using the orchestrator CLI:</p>
+<div class="highlight"><pre><span></span><code>$ cephadm shell -m /home/ceph-admin/specs/rgw
+$ cephadm shell -- ceph orch apply -i /mnt/rgw
+</code></pre></div>
+<p>Which triggers the redeploy:</p>
+<div class="highlight"><pre><span></span><code>...
+osd.9                       cephstorage-2
+rgw.rgw.cephstorage-0.wsjlgx  cephstorage-0  172.17.3.23:8090   starting
+rgw.rgw.cephstorage-1.qynkan  cephstorage-1  172.17.3.26:8090   starting
+rgw.rgw.cephstorage-2.krycit  cephstorage-2  172.17.3.81:8090   starting
+rgw.rgw.controller-1.eyvrzw   controller-1   172.17.3.146:8080  running (5h)
+rgw.rgw.controller-2.navbxa   controller-2   172.17.3.66:8080   running (5h)
+
+...
+osd.9                       cephstorage-2
+rgw.rgw.cephstorage-0.wsjlgx  cephstorage-0  172.17.3.23:8090  running (19s)
+rgw.rgw.cephstorage-1.qynkan  cephstorage-1  172.17.3.26:8090  running (16s)
+rgw.rgw.cephstorage-2.krycit  cephstorage-2  172.17.3.81:8090  running (13s)
+</code></pre></div>
+<p>At this point, we need to make sure that the new RGW backends are reachable on
+the new ports, but we’re going to enable an <strong>IngressDaemon</strong> on port <strong>8080</strong>
+later in the process. For this reason, ssh on each RGW node (the <em>CephStorage</em>
+nodes) and add the iptables rule to allow connections to both 8080 and 8090
+ports in the CephStorage nodes.</p>
+<div class="highlight"><pre><span></span><code>iptables -I INPUT -p tcp -m tcp --dport 8080 -m conntrack --ctstate NEW -m comment --comment &quot;ceph rgw ingress&quot; -j ACCEPT
+
+iptables -I INPUT -p tcp -m tcp --dport 8090 -m conntrack --ctstate NEW -m comment --comment &quot;ceph rgw backends&quot; -j ACCEPT
+
+for port in 8080 8090; { 
+    for i in 25 10 32; {
+       ssh heat-admin@192.168.24.$i sudo iptables -I INPUT \
+       -p tcp -m tcp --dport $port -m conntrack --ctstate NEW \
+       -j ACCEPT;
+   }
+}
+</code></pre></div>
+<p>From a Controller node (e.g. controller-0) try to reach (curl) the rgw backends:</p>
+<div class="highlight"><pre><span></span><code>for i in 26 23 81; do {
+    echo &quot;----&quot;
+    curl 172.17.3.$i:8090;
+    echo &quot;----&quot;
+    echo
+done
+</code></pre></div>
+<p>And you should observe the following:</p>
+<div class="highlight"><pre><span></span><code>----
+Query 172.17.3.23
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;ListAllMyBucketsResult xmlns=&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;&gt;&lt;Owner&gt;&lt;ID&gt;anonymous&lt;/ID&gt;&lt;DisplayName&gt;&lt;/DisplayName&gt;&lt;/Owner&gt;&lt;Buckets&gt;&lt;/Buckets&gt;&lt;/ListAllMyBucketsResult&gt;
+---
+
+----
+Query 172.17.3.26
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;ListAllMyBucketsResult xmlns=&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;&gt;&lt;Owner&gt;&lt;ID&gt;anonymous&lt;/ID&gt;&lt;DisplayName&gt;&lt;/DisplayName&gt;&lt;/Owner&gt;&lt;Buckets&gt;&lt;/Buckets&gt;&lt;/ListAllMyBucketsResult&gt;
+---
+
+----
+Query 172.17.3.81
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;ListAllMyBucketsResult xmlns=&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;&gt;&lt;Owner&gt;&lt;ID&gt;anonymous&lt;/ID&gt;&lt;DisplayName&gt;&lt;/DisplayName&gt;&lt;/Owner&gt;&lt;Buckets&gt;&lt;/Buckets&gt;&lt;/ListAllMyBucketsResult&gt;
+---
+</code></pre></div>
+<h3 id="note">NOTE<a class="headerlink" href="#note" title="Permanent link">#</a></h3>
+<p>In case RGW backends are migrated in the CephStorage nodes, there’s no
+“internalAPI” network(this is not true in the case of HCI). Reconfig the RGW
+keystone endpoint, pointing to the external Network that has been propagated
+(see the previous section)</p>
+<div class="highlight"><pre><span></span><code>[ceph: root@controller-0 /]# ceph config dump | grep keystone
+global   basic rgw_keystone_url  http://172.16.1.111:5000
+
+[ceph: root@controller-0 /]# ceph config set global rgw_keystone_url http://10.0.0.103:5000
+</code></pre></div>
+<h2 id="deploy-a-ceph-ingressdaemon">Deploy a Ceph IngressDaemon<a class="headerlink" href="#deploy-a-ceph-ingressdaemon" title="Permanent link">#</a></h2>
+<p><code>HaProxy</code> is managed by TripleO via <code>Pacemaker</code>: the three running instances at
+this point will point to the old RGW backends, resulting in a wrong, not
+working configuration.
+Since we’re going to deploy the <a href="https://github.com/openstack/tripleo-ansible/blob/master/tripleo_ansible/ansible_plugins/modules/ceph_mkspec.py">Ceph Ingress Daemon</a>, the first thing to do
+is remove the existing <code>ceph_rgw</code> config, clean up the config created by TripleO
+and restart the service to make sure other services are not affected by this
+change.</p>
+<p>ssh  on each Controller node and remove the following is the section from
+<code>/var/lib/config-data/puppet-generated/haproxy/etc/haproxy/haproxy.cfg</code>:</p>
+<div class="highlight"><pre><span></span><code>listen ceph_rgw
+  bind 10.0.0.103:8080 transparent
+  mode http
+  balance leastconn
+  http-request set-header X-Forwarded-Proto https if { ssl_fc }
+  http-request set-header X-Forwarded-Proto http if !{ ssl_fc }
+  http-request set-header X-Forwarded-Port %[dst_port]
+  option httpchk GET /swift/healthcheck
+  option httplog
+  option forwardfor
+   server controller-0.storage.redhat.local 172.17.3.73:8080 check fall 5 inter 2000 rise 2
+  server controller-1.storage.redhat.local 172.17.3.146:8080 check fall 5 inter 2000 rise 2
+  server controller-2.storage.redhat.local 172.17.3.156:8080 check fall 5 inter 2000 rise 2
+</code></pre></div>
+<p>Restart <code>haproxy-bundle</code> and make sure it’s started:</p>
+<div class="highlight"><pre><span></span><code>[root@controller-0 ~]# sudo pcs resource restart haproxy-bundle
+haproxy-bundle successfully restarted
+
+
+[root@controller-0 ~]# sudo pcs status | grep haproxy
+
+  * Container bundle set: haproxy-bundle [undercloud-0.ctlplane.redhat.local:8787/rh-osbs/rhosp17-openstack-haproxy:pcmklatest]:
+    * haproxy-bundle-podman-0   (ocf:heartbeat:podman):  Started controller-0
+    * haproxy-bundle-podman-1   (ocf:heartbeat:podman):  Started controller-1
+    * haproxy-bundle-podman-2   (ocf:heartbeat:podman):  Started controller-2
+</code></pre></div>
+<p>Double check no process is bound to 8080 anymore”</p>
+<div class="highlight"><pre><span></span><code>[root@controller-0 ~]# ss -antop | grep 8080
+[root@controller-0 ~]#
+</code></pre></div>
+<p>And the swift CLI should fail at this point:</p>
+<div class="highlight"><pre><span></span><code>(overcloud) [root@cephstorage-0 ~]# swift list
+
+HTTPConnectionPool(host=&#39;10.0.0.103&#39;, port=8080): Max retries exceeded with url: /swift/v1/AUTH_852f24425bb54fa896476af48cbe35d3?format=json (Caused by NewConnectionError(&#39;&lt;urllib3.connection.HTTPConnection object at 0x7fc41beb0430&gt;: Failed to establish a new connection: [Errno 111] Connection refused&#39;))
+</code></pre></div>
+<p>Now we can start deploying the Ceph IngressDaemon on the CephStorage nodes.</p>
+<p>Set the required images for both HaProxy and Keepalived</p>
+<div class="highlight"><pre><span></span><code>[ceph: root@controller-0 /]# ceph config set mgr mgr/cephadm/container_image_haproxy quay.io/ceph/haproxy:2.3
+
+[ceph: root@controller-0 /]# ceph config set mgr mgr/cephadm/container_image_keepalived quay.io/ceph/keepalived:2.1.5
+</code></pre></div>
+<p>Prepare the ingress spec and mount it to cephadm:</p>
+<div class="highlight"><pre><span></span><code>$ sudo vim /home/ceph-admin/specs/rgw_ingress
+</code></pre></div>
+<p>and paste the following content:</p>
+<div class="highlight"><pre><span></span><code>---
+service_type: ingress
+service_id: rgw.rgw
+placement:
+  label: rgw
+spec:
+  backend_service: rgw.rgw
+  virtual_ip: 10.0.0.89/24
+  frontend_port: 8080
+  monitor_port: 8898
+  virtual_interface_networks:
+    - 10.0.0.0/24
+</code></pre></div>
+<p>Mount the generated spec and apply it using the orchestrator CLI:</p>
+<div class="highlight"><pre><span></span><code>$ cephadm shell -m /home/ceph-admin/specs/rgw_ingress
+$ cephadm shell -- ceph orch apply -i /mnt/rgw_ingress
+</code></pre></div>
+<p>Wait until the ingress is deployed and query the resulting endpoint:</p>
+<div class="highlight"><pre><span></span><code>[ceph: root@controller-0 /]# ceph orch ls
+
+NAME                    PORTS               RUNNING  REFRESHED  AGE  PLACEMENT
+crash                                           6/6  6m ago     3d   *
+ingress.rgw.rgw         10.0.0.89:8080,8898     6/6  37s ago    60s  label:rgw
+mds.mds                   3/3  6m ago   3d   controller-0;controller-1;controller-2
+mgr                       3/3  6m ago   3d   controller-0;controller-1;controller-2
+mon                       3/3  6m ago   3d   controller-0;controller-1;controller-2
+osd.default_drive_group   15  37s ago   3d   cephstorage-0;cephstorage-1;cephstorage-2
+rgw.rgw   ?:8090          3/3  37s ago  4m   label:rgw
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>[ceph: root@controller-0 /]# curl  10.0.0.89:8080
+
+---
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;ListAllMyBucketsResult xmlns=&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;&gt;&lt;Owner&gt;&lt;ID&gt;anonymous&lt;/ID&gt;&lt;DisplayName&gt;&lt;/DisplayName&gt;&lt;/Owner&gt;&lt;Buckets&gt;&lt;/Buckets&gt;&lt;/ListAllMyBucketsResult&gt;[ceph: root@controller-0 /]#
+—
+</code></pre></div>
+<p>The result above shows that we’re able to reach the backend from the
+IngressDaemon, which means we’re almost ready to interact with it using the
+swift CLI.</p>
+<h2 id="update-the-object-store-endpoints">Update the object-store endpoints<a class="headerlink" href="#update-the-object-store-endpoints" title="Permanent link">#</a></h2>
+<p>The endpoints still point to the old VIP owned by pacemaker, but given it’s
+still used by other services and we reserved a new VIP on the same network,
+before any other action we should update the object-store endpoint.</p>
+<p>List the current endpoints:</p>
+<div class="highlight"><pre><span></span><code>(overcloud) [stack@undercloud-0 ~]$ openstack endpoint list | grep object
+
+| 1326241fb6b6494282a86768311f48d1 | regionOne | swift      | object-store   | True | internal  | http://172.17.3.68:8080/swift/v1/AUTH_%(project_id)s |
+| 8a34817a9d3443e2af55e108d63bb02b | regionOne | swift      | object-store   | True | public    | http://10.0.0.103:8080/swift/v1/AUTH_%(project_id)s  |
+| fa72f8b8b24e448a8d4d1caaeaa7ac58 | regionOne | swift      | object-store   | True | admin     | http://172.17.3.68:8080/swift/v1/AUTH_%(project_id)s |
+</code></pre></div>
+<p>Update the endpoints pointing to the Ingress VIP:</p>
+<div class="highlight"><pre><span></span><code>(overcloud) [stack@undercloud-0 ~]$ openstack endpoint set --url &quot;http://10.0.0.89:8080/swift/v1/AUTH_%(project_id)s&quot; 95596a2d92c74c15b83325a11a4f07a3
+
+(overcloud) [stack@undercloud-0 ~]$ openstack endpoint list | grep object-store
+| 6c7244cc8928448d88ebfad864fdd5ca | regionOne | swift      | object-store   | True | internal  | http://172.17.3.79:8080/swift/v1/AUTH_%(project_id)s |
+| 95596a2d92c74c15b83325a11a4f07a3 | regionOne | swift      | object-store   | True | public    | http://10.0.0.89:8080/swift/v1/AUTH_%(project_id)s   |
+| e6d0599c5bf24a0fb1ddf6ecac00de2d | regionOne | swift      | object-store   | True | admin     | http://172.17.3.79:8080/swift/v1/AUTH_%(project_id)s |
+</code></pre></div>
+<p>And repeat the same action for both internal and admin.
+Test the migrated service.</p>
+<div class="highlight"><pre><span></span><code>(overcloud) [stack@undercloud-0 ~]$ swift list --debug
+
+DEBUG:swiftclient:Versionless auth_url - using http://10.0.0.115:5000/v3 as endpoint
+DEBUG:keystoneclient.auth.identity.v3.base:Making authentication request to http://10.0.0.115:5000/v3/auth/tokens
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 10.0.0.115:5000
+DEBUG:urllib3.connectionpool:http://10.0.0.115:5000 &quot;POST /v3/auth/tokens HTTP/1.1&quot; 201 7795
+DEBUG:keystoneclient.auth.identity.v3.base:{&quot;token&quot;: {&quot;methods&quot;: [&quot;password&quot;], &quot;user&quot;: {&quot;domain&quot;: {&quot;id&quot;: &quot;default&quot;, &quot;name&quot;: &quot;Default&quot;}, &quot;id&quot;: &quot;6f87c7ffdddf463bbc633980cfd02bb3&quot;, &quot;name&quot;: &quot;admin&quot;, &quot;password_expires_at&quot;: null}, 
+
+
+...
+...
+...
+
+DEBUG:swiftclient:REQ: curl -i http://10.0.0.89:8080/swift/v1/AUTH_852f24425bb54fa896476af48cbe35d3?format=json -X GET -H &quot;X-Auth-Token: gAAAAABj7KHdjZ95syP4c8v5a2zfXckPwxFQZYg0pgWR42JnUs83CcKhYGY6PFNF5Cg5g2WuiYwMIXHm8xftyWf08zwTycJLLMeEwoxLkcByXPZr7kT92ApT-36wTfpi-zbYXd1tI5R00xtAzDjO3RH1kmeLXDgIQEVp0jMRAxoVH4zb-DVHUos&quot; -H &quot;Accept-Encoding: gzip&quot;
+DEBUG:swiftclient:RESP STATUS: 200 OK
+DEBUG:swiftclient:RESP HEADERS: {&#39;content-length&#39;: &#39;2&#39;, &#39;x-timestamp&#39;: &#39;1676452317.72866&#39;, &#39;x-account-container-count&#39;: &#39;0&#39;, &#39;x-account-object-count&#39;: &#39;0&#39;, &#39;x-account-bytes-used&#39;: &#39;0&#39;, &#39;x-account-bytes-used-actual&#39;: &#39;0&#39;, &#39;x-account-storage-policy-default-placement-container-count&#39;: &#39;0&#39;, &#39;x-account-storage-policy-default-placement-object-count&#39;: &#39;0&#39;, &#39;x-account-storage-policy-default-placement-bytes-used&#39;: &#39;0&#39;, &#39;x-account-storage-policy-default-placement-bytes-used-actual&#39;: &#39;0&#39;, &#39;x-trans-id&#39;: &#39;tx00000765c4b04f1130018-0063eca1dd-1dcba-default&#39;, &#39;x-openstack-request-id&#39;: &#39;tx00000765c4b04f1130018-0063eca1dd-1dcba-default&#39;, &#39;accept-ranges&#39;: &#39;bytes&#39;, &#39;content-type&#39;: &#39;application/json; charset=utf-8&#39;, &#39;date&#39;: &#39;Wed, 15 Feb 2023 09:11:57 GMT&#39;}
+DEBUG:swiftclient:RESP BODY: b&#39;[]&#39;
+</code></pre></div>
+<p>Run tempest tests against object-storage:</p>
+<div class="highlight"><pre><span></span><code>(overcloud) [stack@undercloud-0 tempest-dir]$  tempest run --regex tempest.api.object_storage
+...
+...
+...
+======
+Totals
+======
+Ran: 141 tests in 606.5579 sec.
+ - Passed: 128
+ - Skipped: 13
+ - Expected Fail: 0
+ - Unexpected Success: 0
+ - Failed: 0
+Sum of execute time for each test: 657.5183 sec.
+
+==============
+Worker Balance
+==============
+ - Worker 0 (1 tests) =&gt; 0:10:03.400561
+ - Worker 1 (2 tests) =&gt; 0:00:24.531916
+ - Worker 2 (4 tests) =&gt; 0:00:10.249889
+ - Worker 3 (30 tests) =&gt; 0:00:32.730095
+ - Worker 4 (51 tests) =&gt; 0:00:26.246044
+ - Worker 5 (6 tests) =&gt; 0:00:20.114803
+ - Worker 6 (20 tests) =&gt; 0:00:16.290323
+ - Worker 7 (27 tests) =&gt; 0:00:17.103827
+</code></pre></div>
+<h2 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">#</a></h2>
+<p>A screen recording is available <a href="https://asciinema.org/a/560091">here</a>.</p>
+<script id="asciicast-560091" src="https://asciinema.org/a/560091.js" async data-autoplay="true" data-speed="2"></script>
+
+  <hr>
+<div class="md-source-file">
+  <small>
+    
+      Last update:
+      2023-02-23
+    
+  </small>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["search.suggest", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.cd18aaf1.min.js"></script>
+      
+    
+  </body>
+</html>
